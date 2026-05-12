@@ -12,10 +12,12 @@ using InterFullMarkt.Application.Services;
 public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQuery, GetPlayerByIdResult>
 {
     private readonly IDbContext _dbContext;
+    private readonly AIPricePredictionService _aiService;
 
-    public GetPlayerByIdQueryHandler(IDbContext dbContext)
+    public GetPlayerByIdQueryHandler(IDbContext dbContext, AIPricePredictionService aiService)
     {
         _dbContext = dbContext;
+        _aiService = aiService;
     }
 
     public async Task<GetPlayerByIdResult> Handle(GetPlayerByIdQuery request, CancellationToken cancellationToken)
@@ -64,18 +66,15 @@ public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQue
             TransferHistory = new List<TransferHistoryPoint>()
         };
 
-        // 🤖 AI Price Forecast
-        var aiForecastService = new AIPricePredictionService();
+        // 🤖 Real AI Google Gemini Forecast & Scouting Analysis
         var leagueCoeff = player.CurrentClub?.League?.Coefficient ?? 8.0m;
-        var forecast = aiForecastService.PredictMarketValue(player, leagueCoeff);
+        var (prediction, scoutingReport) = await _aiService.GenerateAIAnalysisAsync(player, leagueCoeff);
 
-        result.AiPredictedValue = forecast.PredictedValueFormatted;
-        result.AiPredictionChange = forecast.ChangePercentage;
-        result.AiPredictionReasoning = forecast.Reasoning;
-        result.AiPredictionConfidence = forecast.Confidence;
+        result.AiPredictedValue = prediction.PredictedValueFormatted;
+        result.AiPredictionChange = prediction.ChangePercentage;
+        result.AiPredictionReasoning = prediction.Reasoning;
+        result.AiPredictionConfidence = prediction.Confidence;
 
-        // 🤖 AI Scouting Analysis
-        var scoutingReport = aiForecastService.GenerateScoutingReport(player);
         result.AiScoutingCategory = scoutingReport.Category;
         result.AiPros = scoutingReport.Pros;
         result.AiSimilarPlayers = scoutingReport.SimilarArchetypes;

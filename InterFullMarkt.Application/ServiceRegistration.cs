@@ -38,6 +38,17 @@ public static class ServiceRegistration
         // FluentValidation - Manual validator registration
         services.AddScoped<IValidator<CreatePlayerCommand>, CreatePlayerCommandValidator>();
 
+        // AI Services & Http Client configuration for Gemini API
+        services.AddHttpClient<InterFullMarkt.Application.Services.AIPricePredictionService>(client =>
+        {
+            client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+        });
+        
+        services.AddHttpClient<InterFullMarkt.Application.Services.AIChatService>(client =>
+        {
+            client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+        });
+
         return services;
     }
 }
