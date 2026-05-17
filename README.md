@@ -112,7 +112,7 @@ Servisler başarıyla başlatıldığında, tanımlanan port (örn: `https://loc
 ## 👨‍💻 Geliştirici Bilgisi
 
 **Hüseyin Orhan Kırtay**  
-*Kıdemli Full-Stack Yazılım Mimarı & Proje Yöneticisi*
+*Kıdemli Yazılım Mimarı & Proje Yöneticisi*
 
 ---
 *Bu proje, akademik vizyon ile endüstriyel standartların kesişim noktasında, inovatif teknolojilere yön vermek amacıyla tasarlanmıştır.*
