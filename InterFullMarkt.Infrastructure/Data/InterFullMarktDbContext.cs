@@ -59,9 +59,6 @@ public sealed class InterFullMarktDbContext(DbContextOptions<InterFullMarktDbCon
 
         // Global Query Filters
         ApplyGlobalQueryFilters(modelBuilder);
-
-        // Seed Data (EF Core HasData does not support complex properties like Money)
-        // SeedData.ConfigureSeedData(modelBuilder);
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿@model List<InterFullMarkt.Domain.Entities.Product>
+@model List<InterFullMarkt.Domain.Entities.Product>
 @{
     ViewData["Title"] = "Mağaza";
 }
@@ -6,33 +6,35 @@
 <div class="store-hero rounded-5 mb-5 overflow-hidden position-relative">
     <div class="store-hero-overlay"></div>
     <div class="container position-relative z-3 py-5 text-center">
-        <span class="badge bg-primary rounded-pill px-3 py-2 mb-3 tracking-widest text-uppercase fw-bold" style="font-size: 0.7rem;">Resmi Lisanslı Ürünler</span>
-        <h1 class="display-2 fw-900 text-dark mb-3">InterFullMarkt <span class="text-gradient">Store</span></h1>
-        <p class="text-secondary fs-5 mx-auto opacity-75" style="max-width: 700px;">
+        <span class="badge rounded-pill px-3 py-2 mb-3 tracking-widest text-uppercase fw-bold" style="font-size: 0.75rem; background: var(--brand-accent); color: #ffffff;">Resmi Lisanslı Ürünler</span>
+        <h1 class="display-3 fw-bold text-white mb-3">InterFullMarkt <span style="color: #38bdf8;">Store</span></h1>
+        <p class="text-light fs-5 mx-auto opacity-90" style="max-width: 700px;">
             Sahadaki performansınızı zirveye taşıyacak profesyonel ekipmanlar ve kalbinizdeki takımın en yeni koleksiyonları burada.
         </p>
     </div>
 </div>
 
+<!-- Kategori Filtre Butonları -->
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-center gap-2 flex-wrap">
-        <button class="btn btn-outline-secondary rounded-pill px-4 active category-btn" onclick="filterStore('All', this)">Tümü</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4 category-btn" onclick="filterStore('Forma', this)">Forma</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4 category-btn" onclick="filterStore('Krampon', this)">Krampon</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4 category-btn" onclick="filterStore('Aksesuar', this)">Aksesuar</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4 category-btn" onclick="filterStore('Giyim', this)">Giyim</button>
+        <button class="btn btn-brand-primary rounded-pill px-4 active category-btn" onclick="filterStore('All', this)">Tümü</button>
+        <button class="btn btn-soft rounded-pill px-4 category-btn" onclick="filterStore('Forma', this)">Forma</button>
+        <button class="btn btn-soft rounded-pill px-4 category-btn" onclick="filterStore('Krampon', this)">Krampon</button>
+        <button class="btn btn-soft rounded-pill px-4 category-btn" onclick="filterStore('Aksesuar', this)">Aksesuar</button>
+        <button class="btn btn-soft rounded-pill px-4 category-btn" onclick="filterStore('Giyim', this)">Giyim</button>
     </div>
 </div>
 
+<!-- Ürün Listesi Grid -->
 <div class="row g-4 pb-5">
     @foreach (var product in Model)
     {
         <div class="col-md-6 col-lg-4 product-card" data-category="@product.Category">
-            <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden group glass-card" style="border-radius: 28px;">
+            <div class="card h-100 position-relative overflow-hidden product-card-layer" style="background: var(--surface-bg); border: 1px solid var(--border-soft); border-radius: 24px; box-shadow: var(--shadow-subtle);">
                 @if (product.IsFeatured)
                 {
                     <div class="position-absolute top-0 end-0 m-3 z-3">
-                        <span class="badge bg-primary rounded-pill px-3 py-2 shadow-lg">Popüler</span>
+                        <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background: var(--brand-accent); color: #ffffff; font-weight: 700;">Popüler</span>
                     </div>
                 }
                 
@@ -45,7 +47,7 @@
                 
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-primary fw-bold small text-uppercase tracking-wider">@product.Category</span>
+                        <span class="fw-bold small text-uppercase" style="color: var(--brand-primary); letter-spacing: 0.5px;">@product.Category</span>
                         <div class="text-warning small">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
@@ -55,17 +57,18 @@
                         </div>
                     </div>
                     
-                    <h4 class="card-title text-dark fw-bold mb-3">@product.Name</h4>
-                    <p class="text-secondary small mb-4 flex-grow-1">@product.Description</p>
+                    <h5 class="card-title text-heading fw-bold mb-2">@product.Name</h5>
+                    <p class="text-subtle small mb-4 flex-grow-1">@product.Description</p>
                     
-                    <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+                    <div class="mt-auto pt-3 border-top" style="border-color: var(--border-subtle) !important;">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-dark fs-4 fw-bold">@product.Price.Amount.ToString("N2") @product.Price.Currency</span>
-                            <small class="text-success small">Stokta Var</small>
+                            <span class="text-heading fs-4 fw-bold">@product.Price.Amount.ToString("N2") @product.Price.Currency</span>
+                            <small class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">Stokta Var</small>
                         </div>
                         
-                        <button onclick="addToCart('@product.Id')" class="btn btn-primary w-100 rounded-pill py-3 fw-bold transition-all hover-translate-y-n2 shadow-lg d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-cart-plus-fill fs-5"></i> Sepete Ekle
+                        <button onclick="addToCart('@product.Id')" class="btn btn-brand-primary w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-cart-plus-fill fs-5"></i>
+                            <span>Sepete Ekle</span>
                         </button>
                     </div>
                 </div>
@@ -77,59 +80,51 @@
 <style>
     .store-hero {
         background: url('https://images.unsplash.com/photo-1574629810360-7efbb2278458?w=1600&q=80') center/cover no-repeat;
-        min-height: 350px;
+        min-height: 320px;
         display: flex;
         align-items: center;
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-soft);
     }
     .store-hero-overlay {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to right, rgba(11, 14, 26, 0.95), rgba(61, 90, 254, 0.4));
+        background: linear-gradient(to right, rgba(15, 76, 110, 0.95), rgba(15, 23, 42, 0.75));
     }
-    .text-gradient {
-        background: linear-gradient(45deg, #fff, var(--accent-color));
-        -webkit-background-clip: text;
-        -webkit-fill-color: transparent;
-    }
-    .fw-900 { font-weight: 900; }
-    .tracking-widest { letter-spacing: 0.2em; }
+    .tracking-widest { letter-spacing: 0.15em; }
     
-    .glass-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border) !important;
-        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    .product-card-layer {
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-    .glass-card:hover {
-        transform: translateY(-12px);
-        border-color: var(--accent-color) !important;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    .product-card-layer:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover) !important;
+        border-color: #94a3b8 !important;
     }
-    .img-zoom-container { overflow: hidden; height: 320px; border-radius: 20px 20px 0 0; }
-    .hover-zoom { transition: transform 0.8s ease; }
-    .product-card:hover .hover-zoom { transform: scale(1.1); }
+    
+    .img-zoom-container { overflow: hidden; height: 280px; border-radius: 22px 22px 0 0; }
+    .hover-zoom { transition: transform 0.6s ease; }
+    .product-card:hover .hover-zoom { transform: scale(1.05); }
     
     .category-btn {
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.03);
+        transition: all 0.2s ease;
+        font-weight: 600;
     }
     .category-btn.active {
-        background: var(--accent-color) !important;
-        box-shadow: 0 8px 20px rgba(61, 90, 254, 0.3);
-        border-color: var(--accent-color);
+        background-color: var(--brand-primary) !important;
+        border-color: var(--brand-primary) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(15, 76, 110, 0.25);
     }
 </style>
 
 <script>
     function filterStore(category, btn) {
         document.querySelectorAll('.category-btn').forEach(b => {
-            b.classList.remove('active', 'btn-primary');
-            b.classList.add('btn-outline-secondary');
+            b.classList.remove('active', 'btn-brand-primary');
+            b.classList.add('btn-soft');
         });
-        btn.classList.remove('btn-outline-secondary');
-        btn.classList.add('active', 'btn-primary');
+        btn.classList.remove('btn-soft');
+        btn.classList.add('active', 'btn-brand-primary');
 
         document.querySelectorAll('.product-card').forEach(card => {
             if (category === 'All' || card.getAttribute('data-category') === category) {

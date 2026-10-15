@@ -1,0 +1,163 @@
+@model List<InterFullMarkt.Domain.Entities.Order>
+@{
+    ViewData["Title"] = "Sipariş Yönetimi";
+}
+
+<!-- Üst Filtre & Arama Araçları -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-subtle);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="orderSearchInput" class="form-control border-start-0" placeholder="Müşteri adı veya sipariş no ara..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select id="orderStatusFilter" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                    <option value="">Tüm Durumlar</option>
+                    <option value="Pending">Beklemede</option>
+                    <option value="Preparing">Hazırlanıyor</option>
+                    <option value="Shipped">Kargolandı</option>
+                    <option value="Completed">Tamamlandı</option>
+                    <option value="Cancelled">İptal Edildi</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <span class="text-subtle small fw-bold">Toplam Sipariş:</span>
+                <span class="badge badge-soft-primary rounded-pill px-3 py-2 ms-2 fs-6" id="orderCountBadge">@Model.Count</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Siparişler Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-bag-check-fill me-2 text-primary"></i> Gelen Siparişler Listesi
+        </h6>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Sipariş Kodu</th>
+                    <th>Müşteri</th>
+                    <th>Tarih</th>
+                    <th>Teslimat Adresi</th>
+                    <th>Kalem</th>
+                    <th>Toplam Tutar</th>
+                    <th>Durum</th>
+                    <th class="text-end" style="width: 120px;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-subtle py-5">
+                            <i class="bi bi-cart-x fs-1 d-block mb-2 text-subtle opacity-50"></i>
+                            Henüz kayıtlı bir sipariş bulunmuyor.
+                        </td>
+                    </tr>
+                }
+                @foreach (var order in Model)
+                {
+                    <tr class="order-row" data-code="@order.Id.ToString().ToLower()" data-customer="@((order.User?.Username ?? "").ToLower())" data-status="@order.Status">
+                        <td>
+                            <span class="font-monospace fw-bold text-primary">#@order.Id.ToString().Substring(0, 8).ToUpper()</span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@(order.User?.Username ?? "Misafir")</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">@(order.User?.Email ?? "-")</small>
+                        </td>
+                        <td>
+                            <div class="small text-heading">@order.OrderDate.ToString("dd.MM.yyyy")</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">@order.OrderDate.ToString("HH:mm")</small>
+                        </td>
+                        <td>
+                            <div class="text-truncate small" style="max-width: 220px;" title="@order.ShippingAddress">
+                                @order.ShippingAddress
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-info rounded-pill">@(order.OrderItems?.Count ?? 0) Ürün</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success">€@((order.TotalAmount?.Amount ?? 0).ToString("N2"))</span>
+                        </td>
+                        <td>
+                            @if (order.Status == "Completed")
+                            {
+                                <span class="badge badge-soft-success rounded-pill px-2 py-1">Tamamlandı</span>
+                            }
+                            else if (order.Status == "Shipped")
+                            {
+                                <span class="badge badge-soft-info rounded-pill px-2 py-1">Kargolandı</span>
+                            }
+                            else if (order.Status == "Preparing")
+                            {
+                                <span class="badge badge-soft-warning rounded-pill px-2 py-1">Hazırlanıyor</span>
+                            }
+                            else if (order.Status == "Cancelled")
+                            {
+                                <span class="badge badge-soft-danger rounded-pill px-2 py-1">İptal Edildi</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft-warning rounded-pill px-2 py-1">@(order.Status ?? "Beklemede")</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Orders/Detail/@order.Id" class="btn btn-sm btn-soft-primary rounded-pill px-3 py-1">
+                                Detay <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('orderSearchInput');
+        const statusFilter = document.getElementById('orderStatusFilter');
+        const rows = document.querySelectorAll('.order-row');
+        const countBadge = document.getElementById('orderCountBadge');
+
+        function filterOrders() {
+            const query = searchInput.value.toLowerCase().trim();
+            const status = statusFilter.value.trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const code = row.getAttribute('data-code') || '';
+                const customer = row.getAttribute('data-customer') || '';
+                const rowStatus = row.getAttribute('data-status') || '';
+
+                const matchesQuery = query === '' || code.includes(query) || customer.includes(query);
+                const matchesStatus = status === '' || rowStatus === status;
+
+                if (matchesQuery && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countBadge) countBadge.textContent = visibleCount;
+        }
+
+        searchInput?.addEventListener('input', filterOrders);
+        statusFilter?.addEventListener('change', filterOrders);
+    </script>
+}

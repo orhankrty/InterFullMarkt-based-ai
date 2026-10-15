@@ -1,81 +1,127 @@
-﻿@model List<InterFullMarkt.Application.DTOs.ClubDto>
+@model List<InterFullMarkt.Application.DTOs.ClubDto>
 @{
-    ViewData["Title"] = "Takım Yönetimi";
+    ViewData["Title"] = "Kulüp & Takım Yönetimi";
 }
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/Admin" class="text-decoration-none text-secondary">Yönetim</a></li>
-                    <li class="breadcrumb-item active text-dark" aria-current="page">Takımlar</li>
-                </ol>
-            </nav>
-            <h2 class="fw-bold mb-0">Takım Yönetimi</h2>
+<!-- Üst Başlık & Arama Araçları -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-subtle);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="clubSearchInput" class="form-control border-start-0" placeholder="Kulüp adı veya stadyum ara..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                </div>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <a href="/Admin/Teams/Create" class="btn btn-brand-primary rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Yeni Kulüp Ekle</span>
+                </a>
+            </div>
         </div>
-        <a href="/Admin/Teams/Create" class="btn btn-primary rounded-pill px-4 py-2">
-            <i class="bi bi-plus-lg me-2"></i> Yeni Takım Ekle
-        </a>
+    </div>
+</div>
+
+<!-- Kulüpler Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-shield-shaded me-2 text-success"></i> Kayıtlı Kulüpler 
+            <span class="badge badge-soft-success ms-2 rounded-pill" id="clubCountBadge">@Model.Count</span>
+        </h6>
     </div>
 
-    <div class="card bg-white border-secondary rounded-4 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0 align-middle">
-                <thead class="bg-black">
-                    <tr class="text-secondary">
-                        <th class="ps-4">Logo</th>
-                        <th>Takım Adı</th>
-                        <th>Kısa Ad</th>
-                        <th>Kuruluş</th>
-                        <th>Bütçe</th>
-                        <th>Kadro</th>
-                        <th class="text-end pe-4">Aksiyonlar</th>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">Logo</th>
+                    <th>Kulüp Adı</th>
+                    <th>Kısa Ad</th>
+                    <th>Stadyum</th>
+                    <th>Kuruluş</th>
+                    <th>Bütçe</th>
+                    <th>Kadro</th>
+                    <th class="text-end" style="width: 140px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-subtle py-5">
+                            <i class="bi bi-shield-x fs-1 d-block mb-2 text-subtle opacity-50"></i>
+                            Kayıtlı kulüp bulunamadı.
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var club in Model)
-                    {
-                        <tr>
-                            <td class="ps-4">
-                                <div class="bg-white rounded-2 p-1 d-inline-block" style="width: 40px; height: 40px;">
-                                    <img src="@(club.LogoUrl ?? "/images/default-club.png")" class="img-fluid" alt="">
-                                </div>
-                            </td>
-                            <td><span class="fw-bold">@club.Name</span></td>
-                            <td><span class="badge bg-secondary">@club.ShortName</span></td>
-                            <td>@club.FoundingYear</td>
-                            <td class="text-success fw-semibold">â‚¬@((club.BudgetAmount ?? 0).ToString("N0"))</td>
-                            <td>@club.SquadCount Oyuncu</td>
-                            <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <a href="/Admin/Teams/Edit/@club.Id" class="btn btn-sm btn-outline-info rounded-start-pill px-3">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <button onclick="deleteTeam('@club.Id')" class="btn btn-sm btn-outline-danger rounded-end-pill px-3">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+                @foreach (var club in Model)
+                {
+                    <tr class="club-row" data-name="@club.Name.ToLower()" data-stadium="@((club.StadiumName ?? "").ToLower())">
+                        <td>
+                            <div class="rounded-circle overflow-hidden bg-white p-1 d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border: 1.5px solid var(--border-soft);">
+                                <img src="@(club.LogoUrl ?? "/images/default-club.png")" class="img-fluid" alt="@club.Name" onerror="this.src='/images/default-club.png';">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@club.Name</div>
+                            <small class="text-subtle" style="font-size: 0.75rem;">ID: @club.Id.ToString().Substring(0, 8)</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-primary rounded-pill px-2 py-1">@club.ShortName</span>
+                        </td>
+                        <td>@(club.StadiumName ?? "Belirtilmedi")</td>
+                        <td>@club.FoundingYear</td>
+                        <td>
+                            <span class="fw-bold text-success">€@((club.BudgetAmount ?? 0).ToString("N0"))</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-info rounded-pill">@club.SquadCount Oyuncu</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a href="/Admin/Teams/Edit/@club.Id" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-1" title="Düzenle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button type="button" onclick="promptDelete('/Admin/Teams/Delete/@club.Id', 'Kulübü Sil', '@club.Name kulübünü sistemden silmek istediğinize emin misiniz?')" class="btn btn-sm btn-soft-danger rounded-pill px-2 py-1" title="Sil">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function deleteTeam(id) {
-            if (confirm('Bu takımı silmek istediğinize emin misiniz?')) {
-                fetch('/Admin/Teams/Delete/' + id, { method: 'POST' })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) location.reload();
-                    });
-            }
-        }
+        const searchInput = document.getElementById('clubSearchInput');
+        const rows = document.querySelectorAll('.club-row');
+        const countBadge = document.getElementById('clubCountBadge');
+
+        searchInput?.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                const stadium = row.getAttribute('data-stadium') || '';
+
+                if (query === '' || name.includes(query) || stadium.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countBadge) countBadge.textContent = visibleCount;
+        });
     </script>
 }
-

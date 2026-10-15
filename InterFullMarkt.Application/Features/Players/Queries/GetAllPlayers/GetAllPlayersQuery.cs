@@ -53,6 +53,21 @@ public sealed class GetAllPlayersQuery : IRequest<GetAllPlayersResult>
     /// Sıralama yönü (opsiyonel: "asc", "desc")
     /// </summary>
     public string? SortDirection { get; set; } = "asc";
+
+    /// <summary>
+    /// Sadece Wonderkid (21 yaş altı) oyuncuları filtrele
+    /// </summary>
+    public bool? OnlyWonderkids { get; set; }
+
+    /// <summary>
+    /// Maksimum yaş sınırı
+    /// </summary>
+    public int? MaxAge { get; set; }
+
+    /// <summary>
+    /// Tercih edilen ayak filtresi (Left, Right)
+    /// </summary>
+    public string? PreferredFoot { get; set; }
 }
 
 /// <summary>

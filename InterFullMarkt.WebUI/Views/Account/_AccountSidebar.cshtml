@@ -1,29 +1,53 @@
-﻿<div class="list-group list-group-flush rounded-4 overflow-hidden border border-secondary border-opacity-25 shadow-sm">
-    <a href="/Account" class="list-group-item list-group-item-action bg-white text-dark py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active bg-primary border-primary" : "")">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+<div class="list-group list-group-flush rounded-4 overflow-hidden border shadow-sm account-nav-group" style="border-color: var(--border-soft) !important;">
+    <a href="/Account" class="list-group-item list-group-item-action d-flex align-items-center py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+        <i class="bi bi-speedometer2 fs-5 me-3"></i>
+        <span>Hesap Özeti</span>
     </a>
-    <a href="/Account/Profile" class="list-group-item list-group-item-action bg-white text-dark py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active bg-primary border-primary" : "")">
-        <i class="bi bi-person-gear me-2"></i> Profil Bilgileri
+    <a href="/Account/Profile" class="list-group-item list-group-item-action d-flex align-items-center py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")">
+        <i class="bi bi-person-gear fs-5 me-3"></i>
+        <span>Profil Bilgileri</span>
     </a>
-    <a href="/Account/Orders" class="list-group-item list-group-item-action bg-white text-dark py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "active bg-primary border-primary" : "")">
-        <i class="bi bi-bag-check me-2"></i> Siparişlerim
+    <a href="/Account/Orders" class="list-group-item list-group-item-action d-flex align-items-center py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "active" : "")">
+        <i class="bi bi-bag-check fs-5 me-3"></i>
+        <span>Siparişlerim</span>
     </a>
-    <a href="/Account/Addresses" class="list-group-item list-group-item-action bg-white text-dark py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Addresses" ? "active bg-primary border-primary" : "")">
-        <i class="bi bi-geo-alt me-2"></i> Adreslerim
+    <a href="/Account/Addresses" class="list-group-item list-group-item-action d-flex align-items-center py-3 @(ViewContext.RouteData.Values["action"]?.ToString() == "Addresses" ? "active" : "")">
+        <i class="bi bi-geo-alt fs-5 me-3"></i>
+        <span>Adreslerim</span>
     </a>
-    <a href="/Auth/Logout" class="list-group-item list-group-item-action bg-white text-danger py-3">
-        <i class="bi bi-box-arrow-right me-2"></i> Güvenli Çıkış
+    <a href="/Auth/Logout" class="list-group-item list-group-item-action d-flex align-items-center py-3 text-danger border-top" style="border-color: var(--border-subtle) !important;">
+        <i class="bi bi-box-arrow-right fs-5 me-3"></i>
+        <span>Güvenli Çıkış</span>
     </a>
 </div>
 
 <style>
-    .list-group-item {
-        border-color: rgba(255, 255, 255, 0.05);
+    .account-nav-group .list-group-item {
+        background-color: var(--surface-bg);
+        color: var(--text-body);
+        font-weight: 600;
+        font-size: 0.95rem;
+        border-color: var(--border-subtle);
         transition: all 0.2s ease;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
     }
-    .list-group-item:hover:not(.active) {
-        background-color: rgba(255, 255, 255, 0.05) !important;
+    .account-nav-group .list-group-item:hover:not(.active):not(.text-danger) {
+        background-color: var(--surface-subtle);
+        color: var(--brand-primary);
         padding-left: 1.5rem;
     }
+    .account-nav-group .list-group-item.text-danger:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+        padding-left: 1.5rem;
+    }
+    .account-nav-group .list-group-item.active {
+        background-color: var(--brand-primary) !important;
+        border-color: var(--brand-primary) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+    .account-nav-group .list-group-item.active i {
+        color: #ffffff !important;
+    }
 </style>
-

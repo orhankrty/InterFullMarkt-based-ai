@@ -1,133 +1,400 @@
-﻿@model List<InterFullMarkt.Application.Features.Players.Queries.GetPlayerById.GetPlayerByIdResult>
+@model List<InterFullMarkt.Application.Features.Players.Queries.GetPlayerById.GetPlayerByIdResult>
 @{
-    ViewData["Title"] = "Oyuncu Kıyaslama";
+    ViewData["Title"] = "Kafa Kafaya Scout Kıyaslama";
 }
 
 <style>
-    .compare-container {
-        padding: 4rem 0;
+    /* Üst Başlık & Oyuncu Kartları (Koyu Stadyum Degradesi) */
+    .compare-header-card {
+        background: var(--hero-gradient);
+        border: 1px solid var(--hero-card-border);
+        border-radius: 28px;
+        padding: 3rem 2rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
+        text-align: center;
+        color: #ffffff;
     }
-    .compare-header {
-        background: linear-gradient(135deg, rgba(61, 90, 254, 0.1), rgba(244, 247, 246, 0.9));
-        border-radius: 40px;
-        padding: 3rem;
-        margin-bottom: 4rem;
-        border: 1px solid var(--border);
+
+    .compare-player-box {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 22px;
+        padding: 1.5rem 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: var(--shadow-subtle);
     }
-    .player-column {
-        transition: all 0.3s ease;
+    .compare-player-box:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-card);
+        border-color: var(--brand-primary);
     }
-    .stat-row {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 12px;
-        margin-bottom: 8px;
-        padding: 15px;
-        border: 1px solid rgba(255,255,255,0.03);
-    }
-    .stat-name {
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
-    .stat-value {
-        font-size: 1.1rem;
-        font-weight: 800;
-        color: white;
-    }
-    .winner-bg {
-        background: rgba(61, 90, 254, 0.1) !important;
-        border-color: rgba(61, 90, 254, 0.3) !important;
-    }
-    .winner-text {
-        color: var(--accent-color) !important;
-    }
-    .compare-img {
-        width: 120px;
-        height: 120px;
+
+    .compare-avatar-lg {
+        width: 95px;
+        height: 95px;
         border-radius: 50%;
-        border: 3px solid var(--accent-color);
         object-fit: cover;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        border: 3px solid var(--surface-bg);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        background: var(--surface-bg);
+        margin-bottom: 0.85rem;
+    }
+
+    .vs-circle-accent {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--brand-accent);
+        color: #ffffff;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+    }
+
+    .matrix-panel-card {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow-subtle);
+        margin-bottom: 2rem;
+    }
+
+    .matrix-th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--text-heading);
+        font-weight: 800;
+        background: var(--surface-subtle);
+        border-bottom: 2px solid var(--border-soft);
+        padding: 1rem;
+    }
+
+    .matrix-td {
+        vertical-align: middle;
+        padding: 1.1rem 1rem;
+        font-weight: 600;
+        color: var(--text-heading);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .matrix-tr:nth-child(even) {
+        background-color: var(--surface-subtle);
+    }
+
+    .winner-highlight-pill {
+        color: #ffffff;
+        font-weight: 800;
+        background: var(--brand-primary);
+        border-radius: var(--radius-pill);
+        padding: 4px 12px;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(15, 76, 110, 0.25);
     }
 </style>
 
-<div class="container compare-container">
-    <div class="compare-header text-center">
-        <h1 class="display-4 fw-bold mb-4">Veri Tabanlı <span class="text-primary">Kıyaslama</span></h1>
-        <div class="d-flex justify-content-center align-items-center gap-4">
-            @foreach (var player in Model)
+<div class="container py-3">
+    <!-- Üst Kontrol & Dönüş -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <a href="@Url.Action("Index")" class="btn btn-soft">
+            <i class="bi bi-arrow-left me-1"></i> Keşif Konsoluna Dön
+        </a>
+        <span class="badge border px-3 py-2 rounded-pill fw-bold" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">
+            <i class="bi bi-intersect me-1"></i> Çoklu Yetenek Analizi
+        </span>
+    </div>
+
+    <!-- Başlık ve Oyuncular Özeti -->
+    <div class="compare-header-card">
+        <h1 class="display-6 fw-bold text-white mb-2">Kafa Kafaya Scout Kıyaslaması</h1>
+        <p class="small mb-4" style="color: #cbd5e1; max-width: 520px; margin: 0 auto;">
+            Seçilen oyuncuların teknik, fiziksel ve taktiksel parametrelerinin doğrudan analizi.
+        </p>
+
+        <div class="row align-items-center justify-content-center g-3">
+            @for (int i = 0; i < Model.Count; i++)
             {
-                <div class="text-center">
-                    <img src="@(player.ImageUrl ?? "https://eu.ui-avatars.com/api/?name=" + player.FullName)" class="compare-img" alt="@player.FullName">
-                    <h5 class="fw-bold mb-0">@player.FullName</h5>
-                    <small class="text-secondary">@player.Position</small>
+                var player = Model[i];
+                <div class="col-md-3 col-sm-6 text-center">
+                    <div class="compare-player-box">
+                        @if (!string.IsNullOrEmpty(player.ImageUrl))
+                        {
+                            <img src="@player.ImageUrl" alt="@player.FullName" class="compare-avatar-lg" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                        }
+                        else
+                        {
+                            <div class="compare-avatar-lg d-inline-flex align-items-center justify-content-center text-primary fs-2 fw-bold">
+                                @player.FullName.First()
+                            </div>
+                        }
+
+                        <h5 class="fw-bold mb-1 text-heading text-truncate">@player.FullName</h5>
+                        <div class="d-flex justify-content-center gap-1 mb-2">
+                            <span class="badge border" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">@player.Position</span>
+                            <span class="badge" style="background: var(--brand-primary-soft); color: var(--brand-primary); font-weight: 800;">Scout: @player.ScoutRating</span>
+                        </div>
+                        <small class="text-subtle d-block text-truncate fw-medium">
+                            <i class="bi bi-shield me-1 text-primary"></i>@(player.ClubName ?? "Kulüpsüz")
+                        </small>
+                    </div>
                 </div>
-                @if (player != Model.Last())
+
+                @if (i < Model.Count - 1)
                 {
-                    <div class="fs-1 fw-900 opacity-25">VS</div>
+                    <div class="col-auto text-center d-none d-md-block">
+                        <div class="vs-circle-accent">VS</div>
+                    </div>
                 }
             }
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Labels -->
-        <div class="col-md-3 d-none d-md-block">
-            <div style="margin-top: 150px;">
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Piyasa Değeri</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Yaş</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Boy / Kilo</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Kulüp</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Tercih Edilen Ayak</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">Scouting Kategorisi</div></div>
-                <div class="stat-row border-0 bg-transparent"><div class="stat-name">AI Güven Skoru</div></div>
+    <!-- Çoklu Yetenek Radarı -->
+    <div class="matrix-panel-card">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h5 class="fw-bold text-heading mb-1">
+                    <i class="bi bi-radar text-primary me-2"></i> Kıyaslamalı Yetenek Radarı
+                </h5>
+                <p class="text-subtle small mb-0 fw-medium">Hız, Şut, Pas, Dribling, Defans ve Fizik metriklerinin görsel profili.</p>
             </div>
+            <span class="badge border px-3 py-1" style="background: var(--surface-subtle); color: var(--text-subtle); border-color: var(--border-soft) !important;">6 Parametre</span>
         </div>
 
-        <!-- Players Data -->
-        @foreach (var player in Model)
-        {
-            <div class="@(Model.Count == 2 ? "col-md-4" : "col-md-3") player-column">
-                <div class="stat-row @(player.MarketValueAmount == Model.Max(m => m.MarketValueAmount) ? "winner-bg" : "")">
-                    <div class="stat-name d-md-none">Piyasa Değeri</div>
-                    <div class="stat-value @(player.MarketValueAmount == Model.Max(m => m.MarketValueAmount) ? "winner-text" : "")">@player.MarketValue</div>
-                </div>
-                <div class="stat-row @(player.Age == Model.Min(m => m.Age) ? "winner-bg" : "")">
-                    <div class="stat-name d-md-none">Yaş</div>
-                    <div class="stat-value">@player.Age Yıl</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-name d-md-none">Boy / Kilo</div>
-                    <div class="stat-value">@player.Height cm / @player.Weight kg</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-name d-md-none">Kulüp</div>
-                    <div class="stat-value">@player.ClubName</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-name d-md-none">Ayak</div>
-                    <div class="stat-value">@player.PreferredFoot</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-name d-md-none">Kategori</div>
-                    <div class="stat-value text-primary">@player.AiScoutingCategory</div>
-                </div>
-                <div class="stat-row">
-                    <div class="stat-name d-md-none">AI Güven</div>
-                    <div class="stat-value">
-                        <span class="badge @(player.AiPredictionConfidence == "High" ? "bg-success" : "bg-warning")">@player.AiPredictionConfidence</span>
-                    </div>
-                </div>
-            </div>
-        }
+        <div style="position: relative; height: 380px;">
+            <canvas id="multiRadarChart"></canvas>
+        </div>
     </div>
 
-    <div class="text-center mt-5">
-        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-5">
-            <i class="bi bi-arrow-left me-2"></i> Aramaya Dön
-        </a>
+    <!-- Kafa Kafaya Metrik Tablosu -->
+    <div class="matrix-panel-card">
+        <h5 class="fw-bold text-heading mb-3">
+            <i class="bi bi-table text-primary me-2"></i> Detaylı Parametre Matrisi
+        </h5>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="matrix-th" style="width: 25%;">Parametre</th>
+                        @foreach (var player in Model)
+                        {
+                            <th class="matrix-th text-center" style="width: @(75 / Model.Count)%;">@player.FullName</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Scout Puanı -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-star-fill text-warning me-2"></i>Scout Rating</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.ScoutRating == Model.Max(m => m.ScoutRating);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.ScoutRating / 100</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Piyasa Değeri -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-cash-stack text-success me-2"></i>Piyasa Değeri</td>
+                        @foreach (var player in Model)
+                        {
+                            <td class="matrix-td text-center fw-bold" style="color: var(--brand-primary);">@player.MarketValue</td>
+                        }
+                    </tr>
+
+                    <!-- Yaş -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-calendar-event me-2"></i>Yaş</td>
+                        @foreach (var player in Model)
+                        {
+                            <td class="matrix-td text-center">@player.Age Yaş</td>
+                        }
+                    </tr>
+
+                    <!-- Boy / Kilo -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-arrows-vertical me-2"></i>Boy / Kilo</td>
+                        @foreach (var player in Model)
+                        {
+                            <td class="matrix-td text-center">@player.Height cm / @player.Weight kg</td>
+                        }
+                    </tr>
+
+                    <!-- Tercih Edilen Ayak -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-shoe-prints me-2"></i>Ayak</td>
+                        @foreach (var player in Model)
+                        {
+                            <td class="matrix-td text-center">@player.PreferredFoot</td>
+                        }
+                    </tr>
+
+                    <!-- Hız -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-lightning-charge text-danger me-2"></i>Hız (PAC)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Pace == Model.Max(m => m.Pace);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Pace</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Şut -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-bullseye text-primary me-2"></i>Şut (SHO)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Shooting == Model.Max(m => m.Shooting);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Shooting</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Pas -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-arrow-repeat text-info me-2"></i>Pas (PAS)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Passing == Model.Max(m => m.Passing);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Passing</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Dribling -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-dribbble text-warning me-2"></i>Dribling (DRI)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Dribbling == Model.Max(m => m.Dribbling);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Dribbling</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Defans -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-shield-shaded text-secondary me-2"></i>Defans (DEF)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Defending == Model.Max(m => m.Defending);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Defending</span>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Fizik -->
+                    <tr class="matrix-tr">
+                        <td class="matrix-td text-subtle fw-bold"><i class="bi bi-activity text-success me-2"></i>Fizik (PHY)</td>
+                        @foreach (var player in Model)
+                        {
+                            var isMax = player.Physicality == Model.Max(m => m.Physicality);
+                            <td class="matrix-td text-center">
+                                <span class="@(isMax ? "winner-highlight-pill" : "")">@player.Physicality</span>
+                            </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script>
+        function getCompareChartColors() {
+            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            return {
+                labelColor: isDark ? '#f8fafc' : '#0f172a',
+                gridColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(15, 23, 42, 0.1)'
+            };
+        }
+
+        const chartColors = getCompareChartColors();
+        const ctx = document.getElementById('multiRadarChart').getContext('2d');
+        
+        const palette = [
+            { border: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)', point: '#38bdf8' },
+            { border: '#f59e0b', bg: 'rgba(245, 158, 11, 0.2)', point: '#f59e0b' },
+            { border: '#10b981', bg: 'rgba(16, 185, 129, 0.2)', point: '#10b981' }
+        ];
+
+        const datasets = [];
+
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var p = Model[i];
+            <text>
+            datasets.push({
+                label: '@p.FullName',
+                data: [@p.Pace, @p.Shooting, @p.Passing, @p.Dribbling, @p.Defending, @p.Physicality],
+                borderColor: palette[@i % palette.length].border,
+                backgroundColor: palette[@i % palette.length].bg,
+                borderWidth: 2.5,
+                pointBackgroundColor: palette[@i % palette.length].point,
+                pointBorderColor: '#ffffff',
+                pointRadius: 4
+            });
+            </text>
+        }
+
+        const compareChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Hız (PAC)', 'Şut (SHO)', 'Pas (PAS)', 'Dribling (DRI)', 'Defans (DEF)', 'Fizik (PHY)'],
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: chartColors.gridColor },
+                        grid: { color: chartColors.gridColor },
+                        suggestedMin: 30,
+                        suggestedMax: 100,
+                        ticks: { stepSize: 20, font: { size: 10, weight: 'bold' }, backdropColor: 'transparent', color: chartColors.labelColor },
+                        pointLabels: {
+                            font: { size: 12, weight: '700' },
+                            color: chartColors.labelColor
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 13, weight: '700' },
+                            color: chartColors.labelColor
+                        }
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('themeChanged', function() {
+            const c = getCompareChartColors();
+            compareChart.options.scales.r.angleLines.color = c.gridColor;
+            compareChart.options.scales.r.grid.color = c.gridColor;
+            compareChart.options.scales.r.ticks.color = c.labelColor;
+            compareChart.options.scales.r.pointLabels.color = c.labelColor;
+            compareChart.options.plugins.legend.labels.color = c.labelColor;
+            compareChart.update();
+        });
+    </script>
+}

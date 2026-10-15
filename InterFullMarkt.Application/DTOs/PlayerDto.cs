@@ -80,4 +80,34 @@ public sealed class PlayerDto
     /// Güncelleme tarihi
     /// </summary>
     public required DateTime UpdatedDate { get; set; }
+
+    /// <summary>
+    /// Wonderkid mi (21 yaş altı ve gelişim potansiyeli yüksek)
+    /// </summary>
+    public bool IsWonderkid { get; set; }
+
+    /// <summary>
+    /// Gelişim potansiyeli yüzdesi
+    /// </summary>
+    public decimal PotentialGrowth { get; set; }
+
+    /// <summary>
+    /// Scout Puanı (1-100)
+    /// </summary>
+    public int ScoutRating { get; set; }
+
+    /// <summary>
+    /// Scout Seviyesi
+    /// </summary>
+    public string ScoutTier { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Radar Metrikleri
+    /// </summary>
+    public int Pace { get; set; }
+    public int Shooting { get; set; }
+    public int Passing { get; set; }
+    public int Dribbling { get; set; }
+    public int Defending { get; set; }
+    public int Physicality { get; set; }
 }

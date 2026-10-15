@@ -1,90 +1,168 @@
-﻿@model List<InterFullMarkt.Application.DTOs.PlayerDto>
+@model List<InterFullMarkt.Application.DTOs.PlayerDto>
 @{
     ViewData["Title"] = "Oyuncu Yönetimi";
 }
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/Admin" class="text-decoration-none text-secondary">Yönetim</a></li>
-                    <li class="breadcrumb-item active text-dark" aria-current="page">Oyuncular</li>
-                </ol>
-            </nav>
-            <h2 class="fw-bold mb-0">Oyuncu Yönetimi</h2>
+<!-- Üst Başlık & Arama/Filtreleme Araçları -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-subtle);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="playerSearchInput" class="form-control border-start-0" placeholder="Oyuncu adı veya kulüp ara..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select id="positionFilterSelect" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                    <option value="">Tüm Pozisyonlar</option>
+                    <option value="GK">Kaleci (GK)</option>
+                    <option value="CB">Stoper (CB)</option>
+                    <option value="LB">Sol Bek (LB)</option>
+                    <option value="RB">Sağ Bek (RB)</option>
+                    <option value="CM">Merkez Orta Saha (CM)</option>
+                    <option value="CAM">Ofansif Orta Saha (CAM)</option>
+                    <option value="LW">Sol Kanat (LW)</option>
+                    <option value="RW">Sağ Kanat (RW)</option>
+                    <option value="ST">Santrfor (ST)</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <a href="/Admin/Players/Create" class="btn btn-brand-primary rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Yeni Oyuncu Ekle</span>
+                </a>
+            </div>
         </div>
-        <a href="/Players/Create" class="btn btn-primary rounded-pill px-4 py-2">
-            <i class="bi bi-plus-lg me-2"></i> Yeni Oyuncu Ekle
-        </a>
+    </div>
+</div>
+
+<!-- Oyuncular Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-people-fill me-2 text-primary"></i> Kayıtlı Futbolcular 
+            <span class="badge badge-soft-primary ms-2 rounded-pill" id="playerCountBadge">@Model.Count</span>
+        </h6>
     </div>
 
-    <div class="card bg-white border-secondary rounded-4 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0 align-middle">
-                <thead class="bg-black">
-                    <tr class="text-secondary">
-                        <th class="ps-4">Profil</th>
-                        <th>Ad Soyad</th>
-                        <th>Pozisyon</th>
-                        <th>Milliyet</th>
-                        <th>Yaş</th>
-                        <th>Kulüp</th>
-                        <th>Piyasa Değeri</th>
-                        <th class="text-end pe-4">Aksiyonlar</th>
+    <div class="table-responsive">
+        <table class="admin-table" id="playersTable">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">Profil</th>
+                    <th>Adı Soyadı</th>
+                    <th>Pozisyon</th>
+                    <th>Milliyet</th>
+                    <th>Yaş</th>
+                    <th>Kulüp</th>
+                    <th>Piyasa Değeri</th>
+                    <th class="text-end" style="width: 140px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-subtle py-5">
+                            <i class="bi bi-person-x fs-1 d-block mb-2 text-subtle opacity-50"></i>
+                            Kayıtlı oyuncu bulunamadı.
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var player in Model)
-                    {
-                        <tr>
-                            <td class="ps-4">
-                                <div class="rounded-circle overflow-hidden bg-secondary d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border: 2px solid var(--accent-color);">
-                                    @if (!string.IsNullOrEmpty(player.ImageUrl))
-                                    {
-                                        <img src="@player.ImageUrl" class="img-fluid" alt="">
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-person text-dark opacity-25"></i>
-                                    }
-                                </div>
-                            </td>
-                            <td><span class="fw-bold">@player.FullName</span></td>
-                            <td><span class="badge bg-white border border-secondary">@player.Position</span></td>
-                            <td>@player.Nationality</td>
-                            <td>@player.Age</td>
-                            <td>@(player.CurrentClubName ?? "Kulüpsüz")</td>
-                            <td class="text-warning fw-bold">@player.MarketValue</td>
-                            <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <a href="/Admin/Players/Edit/@player.Id" class="btn btn-sm btn-outline-info rounded-start-pill px-3">
-                                        <i class="bi bi-pencil"></i> Düzenle
-                                    </a>
-                                    <button onclick="deletePlayer('@player.Id')" class="btn btn-sm btn-outline-danger rounded-end-pill px-3">
-                                        <i class="bi bi-trash"></i> Sil
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+                @foreach (var player in Model)
+                {
+                    <tr class="player-row" data-name="@player.FullName.ToLower()" data-club="@((player.CurrentClubName ?? "").ToLower())" data-pos="@player.Position">
+                        <td>
+                            <div class="rounded-circle overflow-hidden bg-light d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border: 2px solid var(--border-soft);">
+                                @if (!string.IsNullOrEmpty(player.ImageUrl))
+                                {
+                                    <img src="@player.ImageUrl" class="img-fluid" alt="@player.FullName" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://eu.ui-avatars.com/api/?name=@(Uri.EscapeDataString(player.FullName))&background=random';">
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person text-heading opacity-50"></i>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@player.FullName</div>
+                            <small class="text-subtle" style="font-size: 0.75rem;">ID: @player.Id.ToString().Substring(0, 8)</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-info rounded-pill px-2 py-1">@player.Position</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold">@player.Nationality</span>
+                        </td>
+                        <td>@player.Age Yaş</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(player.CurrentClubName))
+                            {
+                                <span class="badge badge-soft-primary rounded-pill">@player.CurrentClubName</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft-warning rounded-pill">Kulüpsüz</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success">@player.MarketValue</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a href="/Admin/Players/Edit/@player.Id" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-1" title="Düzenle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button type="button" onclick="promptDelete('/Admin/Players/Delete/@player.Id', 'Oyuncuyu Sil', '@player.FullName isimli oyuncuyu sistemden silmek istediğinize emin misiniz?')" class="btn btn-sm btn-soft-danger rounded-pill px-2 py-1" title="Sil">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function deletePlayer(id) {
-            if (confirm('Bu oyuncuyu silmek istediğinize emin misiniz?')) {
-                fetch('/Admin/Players/Delete/' + id, { method: 'POST' })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) location.reload();
-                    });
-            }
+        // Anlık Arama ve Filtreleme
+        const searchInput = document.getElementById('playerSearchInput');
+        const posFilter = document.getElementById('positionFilterSelect');
+        const rows = document.querySelectorAll('.player-row');
+        const countBadge = document.getElementById('playerCountBadge');
+
+        function filterPlayers() {
+            const query = searchInput.value.toLowerCase().trim();
+            const pos = posFilter.value.toUpperCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                const club = row.getAttribute('data-club') || '';
+                const rowPos = row.getAttribute('data-pos') || '';
+
+                const matchesQuery = query === '' || name.includes(query) || club.includes(query);
+                const matchesPos = pos === '' || rowPos.includes(pos);
+
+                if (matchesQuery && matchesPos) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countBadge) countBadge.textContent = visibleCount;
         }
+
+        searchInput?.addEventListener('input', filterPlayers);
+        posFilter?.addEventListener('change', filterPlayers);
     </script>
 }
-

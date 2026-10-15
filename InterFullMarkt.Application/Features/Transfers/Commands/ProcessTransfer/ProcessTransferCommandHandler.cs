@@ -103,19 +103,15 @@ public sealed class ProcessTransferCommandHandler : IRequestHandler<ProcessTrans
             // 8. Oyuncu transferini gerçekleştir
             player.CurrentClubId = request.ToClubId;
 
-            // 9. Bütçet güncelle
-            var newFromClubBudget = Money.Create(
-                fromClub.Budget?.Amount ?? 0m + transferFee.Amount,
-                request.Currency
-            );
-            
-            var newToClubBudget = Money.Create(
-                toClub.Budget?.Amount ?? 0m - transferFee.Amount,
-                request.Currency
-            );
-
-            fromClub.Budget = newFromClubBudget;
-            toClub.Budget = newToClubBudget;
+            // 9. Bütçeleri güncelle (Domain metotları ile)
+            if (fromClub.Budget != null)
+            {
+                fromClub.AddToBudget(transferFee);
+            }
+            if (toClub.Budget != null)
+            {
+                toClub.DeductFromBudget(transferFee);
+            }
 
             // 10. Transfer kayıt et
             _dbContext.Transfers.Add(transfer);

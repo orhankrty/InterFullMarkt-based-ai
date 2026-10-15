@@ -1,0 +1,141 @@
+@model List<InterFullMarkt.Domain.Entities.Product>
+@{
+    ViewData["Title"] = "Mağaza Ürün Yönetimi";
+}
+
+<!-- Üst Başlık & Arama/Ekleme Araçları -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-subtle);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="productSearchInput" class="form-control border-start-0" placeholder="Ürün adı veya kategori ara..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                </div>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <a href="/Admin/Products/Create" class="btn btn-brand-primary rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Yeni Ürün Ekle</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ürünler Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-box-seam-fill me-2 text-warning"></i> Mağaza Kataloğu 
+            <span class="badge badge-soft-warning ms-2 rounded-pill" id="productCountBadge">@Model.Count Ürün</span>
+        </h6>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Görsel</th>
+                    <th>Ürün Adı</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
+                    <th>Öne Çıkan</th>
+                    <th class="text-end" style="width: 140px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-subtle py-5">
+                            <i class="bi bi-box-arrow-in-down fs-1 d-block mb-2 text-subtle opacity-50"></i>
+                            Mağazada henüz ürün bulunmuyor.
+                        </td>
+                    </tr>
+                }
+                @foreach (var p in Model)
+                {
+                    <tr class="product-row" data-name="@p.Name.ToLower()" data-category="@p.Category.ToLower()">
+                        <td>
+                            <div class="rounded-3 overflow-hidden bg-white p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border: 1px solid var(--border-soft);">
+                                <img src="@(p.ImageUrl ?? "/images/default-product.png")" class="img-fluid" alt="@p.Name" onerror="this.src='/images/default-product.png';" style="max-height: 100%; object-fit: contain;">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@p.Name</div>
+                            <small class="text-subtle text-truncate d-block" style="max-width: 280px;">@p.Description</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-primary rounded-pill px-2 py-1">@p.Category</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success">€@((p.Price?.Amount ?? 0).ToString("N2"))</span>
+                        </td>
+                        <td>
+                            @if (p.StockQuantity <= 5)
+                            {
+                                <span class="badge badge-soft-danger rounded-pill">@p.StockQuantity Adet (Kritik)</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft-success rounded-pill">@p.StockQuantity Adet</span>
+                            }
+                        </td>
+                        <td>
+                            @if (p.IsFeatured)
+                            {
+                                <span class="badge badge-soft-warning rounded-pill px-2 py-1"><i class="bi bi-star-fill text-warning me-1"></i> Evet</span>
+                            }
+                            else
+                            {
+                                <span class="text-subtle small">Hayır</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                <a href="/Admin/Products/Edit/@p.Id" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-1" title="Düzenle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button type="button" onclick="promptDelete('/Admin/Products/Delete/@p.Id', 'Ürünü Sil', '@p.Name ürününü mağazadan silmek istediğinize emin misiniz?')" class="btn btn-sm btn-soft-danger rounded-pill px-2 py-1" title="Sil">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('productSearchInput');
+        const rows = document.querySelectorAll('.product-row');
+        const countBadge = document.getElementById('productCountBadge');
+
+        searchInput?.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                const category = row.getAttribute('data-category') || '';
+
+                if (query === '' || name.includes(query) || category.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countBadge) countBadge.textContent = visibleCount + ' Ürün';
+        });
+    </script>
+}

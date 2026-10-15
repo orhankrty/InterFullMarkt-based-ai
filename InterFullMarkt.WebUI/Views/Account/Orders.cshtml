@@ -1,70 +1,90 @@
-﻿@model List<InterFullMarkt.Domain.Entities.Order>
+@model List<InterFullMarkt.Domain.Entities.Order>
 @{
     ViewData["Title"] = "Siparişlerim";
 }
 
-<div class="container py-5">
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-size: 0.825rem; font-weight: 700;">
+                <i class="bi bi-bag-check-fill"></i> SİPARİŞ GEÇMİŞİ
+            </div>
+            <h1 class="display-6 fw-bold mb-1 text-heading">Siparişlerim</h1>
+            <p class="text-body small mb-0 fw-medium">Geçmiş ve mevcut tüm ürün siparişlerinizin kargo takibi ve fatura detayları.</p>
+        </div>
+    </div>
+
     <div class="row g-4">
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="card bg-white border-0 p-3 rounded-4">
+            <div class="card border p-3 shadow-sm mb-4" style="border-color: var(--border-soft) !important; border-radius: 22px;">
                 <partial name="_AccountSidebar" />
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="col-lg-9">
-            <h2 class="fw-bold mb-4">Siparişlerim</h2>
-            
             @if (!Model.Any())
             {
-                <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-5 text-center shadow-lg">
-                    <div class="opacity-25 mb-4">
-                        <i class="bi bi-bag-x display-1"></i>
+                <div class="card border shadow-sm p-5 text-center" style="border-color: var(--border-soft) !important; border-radius: 24px;">
+                    <div class="py-4 text-subtle">
+                        <i class="bi bi-bag-x display-2 mb-3 d-block opacity-50"></i>
+                        <h4 class="text-heading fw-bold mb-2">Henüz Bir Siparişiniz Bulunmuyor</h4>
+                        <p class="small mx-auto mb-4" style="max-width: 420px;">
+                            InterFullMarkt Store üzerindeki lisanslı formalar, profesyonel kramponlar ve antrenman ekipmanlarını keşfedebilirsiniz.
+                        </p>
+                        <a href="/Store" class="btn btn-brand-primary px-5 py-2">
+                            <i class="bi bi-bag me-1"></i> Mağazayı Keşfet
+                        </a>
                     </div>
-                    <h4 class="text-dark fw-bold">Henüz Siparişiniz Yok</h4>
-                    <p class="text-secondary mb-4">Mağazamızdaki harika ürünlere göz atarak ilk siparişinizi verebilirsiniz.</p>
-                    <a href="/Store" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-lg">Mağazayı Keşfet</a>
                 </div>
             }
             else
             {
                 @foreach (var order in Model)
                 {
-                    <div class="card bg-white border-secondary border-opacity-25 rounded-4 overflow-hidden mb-4 shadow-sm">
-                        <div class="card-header bg-black bg-opacity-25 py-3 px-4 d-flex justify-content-between align-items-center">
+                    <div class="card shadow-sm overflow-hidden mb-4" style="border: 1px solid var(--border-soft); border-radius: 22px;">
+                        <div class="p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3" style="background-color: var(--surface-subtle); border-color: var(--border-subtle) !important;">
                             <div>
-                                <span class="text-secondary small d-block">Sipariş Tarihi</span>
-                                <span class="text-dark fw-bold">@order.OrderDate.ToString("dd MMMM yyyy HH:mm")</span>
-                            </div>
-                            <div class="text-md-end">
-                                <span class="text-secondary small d-block">Sipariş No</span>
-                                <span class="text-dark fw-bold">#@order.Id.ToString().Substring(0, 8).ToUpper()</span>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Sipariş Tarihi</small>
+                                <span class="text-heading fw-bold">@order.OrderDate.ToString("dd MMMM yyyy HH:mm")</span>
                             </div>
                             <div>
-                                <span class="badge @(order.Status == "Completed" ? "bg-success" : "bg-primary") rounded-pill px-3">@order.Status</span>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Sipariş Kodu</small>
+                                <span class="text-heading fw-bold">#@order.Id.ToString().Substring(0, 8).ToUpper()</span>
+                            </div>
+                            <div>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Durum</small>
+                                <span class="badge rounded-pill px-3 py-1" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-weight: 700;">
+                                    @order.Status
+                                </span>
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row g-4">
+                            <div class="row g-4 align-items-center">
                                 <div class="col-md-8">
-                                    <div class="d-flex gap-2 flex-wrap mb-3">
+                                    <div class="d-flex gap-3 flex-wrap mb-3">
                                         @foreach (var item in order.OrderItems)
                                         {
-                                            <div class="bg-black bg-opacity-25 rounded-3 p-1 position-relative" style="width: 60px; height: 60px;">
-                                                <img src="@item.Product?.ImageUrl" class="w-100 h-100 rounded-2" style="object-fit: cover;" title="@item.Product?.Name">
-                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">@item.Quantity</span>
+                                            <div class="rounded-3 p-1 position-relative border bg-light" style="width: 64px; height: 64px; border-color: var(--border-soft) !important;">
+                                                <img src="@(item.Product?.ImageUrl ?? "/images/default-avatar.png")" class="w-100 h-100 rounded-2" style="object-fit: cover;" title="@item.Product?.Name">
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">@item.Quantity</span>
                                             </div>
                                         }
                                     </div>
-                                    <p class="text-secondary small mb-0"><i class="bi bi-geo-alt me-1"></i> @order.ShippingAddress</p>
+                                    <p class="text-subtle small mb-0">
+                                        <i class="bi bi-geo-alt me-1 text-primary"></i> <strong>Teslimat Adresi:</strong> @order.ShippingAddress
+                                    </p>
                                 </div>
-                                <div class="col-md-4 text-md-end d-flex flex-column justify-content-between">
-                                    <div>
-                                        <span class="text-secondary small d-block">Toplam Tutar</span>
-                                        <span class="text-warning fs-4 fw-bold">@order.TotalAmount.ToString()</span>
+                                <div class="col-md-4 text-md-end">
+                                    <small class="text-subtle d-block">Toplam Tutar</small>
+                                    <span class="fs-4 fw-bold" style="color: var(--brand-primary);">@order.TotalAmount</span>
+                                    <div class="mt-2">
+                                        <a href="/Checkout/Success/@order.Id" class="btn btn-sm btn-soft">
+                                            <i class="bi bi-receipt me-1"></i> Detaylı Fatura
+                                        </a>
                                     </div>
-                                    <a href="/Checkout/Success/@order.Id" class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-3">Detayları Gör</a>
                                 </div>
                             </div>
                         </div>
@@ -74,4 +94,3 @@
         </div>
     </div>
 </div>
-

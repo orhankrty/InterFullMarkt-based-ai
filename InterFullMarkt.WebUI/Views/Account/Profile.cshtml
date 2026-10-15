@@ -3,79 +3,94 @@
     ViewData["Title"] = "Profil Bilgileri";
 }
 
-<div class="container py-5">
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-size: 0.825rem; font-weight: 700;">
+                <i class="bi bi-person-gear"></i> KULLANICI AYARLARI
+            </div>
+            <h1 class="display-6 fw-bold mb-1 text-heading">Profil Bilgileri</h1>
+            <p class="text-body small mb-0 fw-medium">Kişisel bilgilerinizi, iletişim tercihlerinizi ve hesap güvenliğinizi güncelleyin.</p>
+        </div>
+    </div>
+
     <div class="row g-4">
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="card bg-white border-0 p-3 rounded-4">
+            <div class="card border p-3 shadow-sm mb-4" style="border-color: var(--border-soft) !important; border-radius: 22px;">
                 <partial name="_AccountSidebar" />
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="col-lg-9">
-            <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 shadow-lg">
-                <h2 class="fw-bold mb-4">Profil Bilgileri</h2>
+            <div class="card shadow-sm p-4 mb-4" style="border: 1px solid var(--border-soft); border-radius: 22px;">
+                <h4 class="fw-bold text-heading mb-3">Kişisel Bilgiler</h4>
+                <p class="text-subtle small mb-4">Sistem üzerinde görünen adınız, soyadınız ve teslimat iletişim numaranız.</p>
                 
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 bg-success bg-opacity-10 text-success border-success border-opacity-25" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 bg-success bg-opacity-10 text-success border-success border-opacity-25 mb-4" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
                     </div>
                 }
 
                 <form asp-action="Profile" method="post" class="row g-4">
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">Kullanıcı Adı</label>
-                        <input type="text" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-25 text-dark py-2 rounded-3" value="@Model.Username" readonly disabled>
-                        <small class="text-muted">Kullanıcı adı değiştirilemez.</small>
+                        <label class="form-label text-heading small fw-bold">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" style="background-color: var(--surface-subtle) !important;" value="@Model.Username" readonly disabled>
+                        <small class="text-subtle" style="font-size: 0.775rem;">Kullanıcı adı sistem güvenliği nedeniyle değiştirilemez.</small>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">E-Posta Adresi</label>
-                        <input type="email" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-25 text-dark py-2 rounded-3" value="@Model.Email" readonly disabled>
+                        <label class="form-label text-heading small fw-bold">E-Posta Adresi</label>
+                        <input type="email" class="form-control" style="background-color: var(--surface-subtle) !important;" value="@Model.Email" readonly disabled>
+                        <small class="text-subtle" style="font-size: 0.775rem;">Kayıtlı resmî e-posta adresiniz.</small>
                     </div>
                     
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">Ad</label>
-                        <input type="text" name="firstName" value="@Model.FirstName" class="form-control bg-white border-secondary border-opacity-50 text-dark py-2 rounded-3 shadow-none focus-border-primary" placeholder="Adınız">
+                        <label class="form-label text-heading small fw-bold">Ad</label>
+                        <input type="text" name="firstName" value="@Model.FirstName" class="form-control" placeholder="Adınız" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small fw-bold">Soyad</label>
-                        <input type="text" name="lastName" value="@Model.LastName" class="form-control bg-white border-secondary border-opacity-50 text-dark py-2 rounded-3 shadow-none focus-border-primary" placeholder="Soyadınız">
+                        <label class="form-label text-heading small fw-bold">Soyad</label>
+                        <input type="text" name="lastName" value="@Model.LastName" class="form-control" placeholder="Soyadınız" required>
                     </div>
                     
                     <div class="col-md-12">
-                        <label class="form-label text-secondary small fw-bold">Telefon Numarası</label>
+                        <label class="form-label text-heading small fw-bold">Telefon Numarası</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-black bg-opacity-25 border-secondary border-opacity-25 text-secondary">+90</span>
-                            <input type="tel" name="phoneNumber" value="@Model.PhoneNumber" class="form-control bg-white border-secondary border-opacity-50 text-dark py-2 rounded-end-3 shadow-none focus-border-primary" placeholder="5xx xxx xxxx">
+                            <span class="input-group-text bg-light text-subtle fw-bold" style="border-color: var(--border-soft);">+90</span>
+                            <input type="tel" name="phoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="5xx xxx xxxx">
                         </div>
+                        <small class="text-subtle" style="font-size: 0.775rem;">Sipariş kargo ve teslimat bildirimleri için kullanılır.</small>
                     </div>
 
-                    <div class="col-12 pt-3">
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-lg">
-                            Değişiklikleri Kaydet
+                    <div class="col-12 pt-2">
+                        <button type="submit" class="btn btn-brand-primary px-5 py-2">
+                            <i class="bi bi-check2 me-1"></i> Değişiklikleri Kaydet
                         </button>
                     </div>
                 </form>
             </div>
 
-            <div class="card bg-white bg-opacity-50 border-danger border-opacity-10 rounded-4 p-4 mt-5">
-                <h5 class="text-dark fw-bold mb-3"><i class="bi bi-shield-lock text-danger me-2"></i> Hesap Güvenliği</h5>
-                <p class="text-secondary small">Şifrenizi yenilemek veya güvenlik ayarlarınızı yönetmek için güvenlik merkezine gidebilirsiniz.</p>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-danger btn-sm rounded-pill px-4">Şifre Değiştir</button>
-                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-4">İki Faktörlü Doğrulama</button>
+            <!-- Security Box -->
+            <div class="card shadow-sm p-4" style="border: 1px solid var(--border-soft); border-radius: 22px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-shield-lock-fill text-danger fs-4"></i>
+                    <h5 class="text-heading fw-bold mb-0">Hesap Güvenliği</h5>
+                </div>
+                <p class="text-subtle small mb-3">Hesap parolanızı değiştirebilir veya ek güvenlik doğrulama adımlarını yapılandırabilirsiniz.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-soft text-danger" onclick="alert('Şifre yenileme bağlantısı e-posta adresinize gönderildi.')">
+                        <i class="bi bi-key me-1"></i> Şifre Değiştir
+                    </button>
+                    <button type="button" class="btn btn-sm btn-soft" onclick="alert('İki faktörlü kimlik doğrulama bir sonraki güncellemede kullanıma açılacaktır.')">
+                        <i class="bi bi-shield-check me-1"></i> İki Faktörlü Doğrulama
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .focus-border-primary:focus {
-        border-color: var(--accent-color) !important;
-    }
-</style>
-

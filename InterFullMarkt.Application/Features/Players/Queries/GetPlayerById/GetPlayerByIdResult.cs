@@ -6,6 +6,7 @@ namespace InterFullMarkt.Application.Features.Players.Queries.GetPlayerById;
 public sealed class GetPlayerByIdResult
 {
     public Guid PlayerId { get; set; }
+    public Guid Id => PlayerId;
     public string FullName { get; set; } = string.Empty;
     public string Position { get; set; } = string.Empty;
     public string Nationality { get; set; } = string.Empty;
@@ -67,6 +68,19 @@ public sealed class GetPlayerByIdResult
     public string? AiScoutingCategory { get; set; }
     public List<string> AiPros { get; set; } = new();
     public List<string> AiSimilarPlayers { get; set; } = new();
+
+    // 📊 Scout & Radar Metrikleri
+    public int Pace { get; set; }
+    public int Shooting { get; set; }
+    public int Passing { get; set; }
+    public int Dribbling { get; set; }
+    public int Defending { get; set; }
+    public int Physicality { get; set; }
+    public int ScoutRating { get; set; }
+    public bool IsWonderkid { get; set; }
+    public string ScoutTier { get; set; } = string.Empty;
+    public decimal PotentialGrowthPercentage { get; set; }
+    public decimal PotentialGrowth => PotentialGrowthPercentage;
 }
 
 /// <summary>

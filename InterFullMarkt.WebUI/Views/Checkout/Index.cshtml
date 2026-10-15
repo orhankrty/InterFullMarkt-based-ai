@@ -5,36 +5,36 @@
 }
 
 <div class="container py-5">
-    <div class="row mb-5">
+    <div class="row mb-4">
         <div class="col-12">
-            <h1 class="display-5 fw-bold text-dark mb-2">Güvenli <span class="text-primary">Ödeme</span></h1>
-            <p class="text-secondary">Siparişinizi tamamlamak için adres ve ödeme bilgilerinizi kontrol edin.</p>
+            <h1 class="display-6 fw-bold text-heading mb-2">Güvenli <span style="color: var(--brand-primary);">Ödeme</span></h1>
+            <p class="text-secondary">Siparişinizi tamamlamak için teslimat ve ödeme bilgilerinizi kontrol edin.</p>
         </div>
     </div>
 
     <form action="/Checkout/Process" method="post">
-        <div class="row g-5">
+        <div class="row g-4">
             <!-- Left: Checkout Form -->
             <div class="col-lg-8">
-                <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 shadow-lg mb-4">
-                    <h5 class="text-dark fw-bold mb-4"><i class="bi bi-geo-alt text-primary me-2"></i> Teslimat Adresi</h5>
+                <div class="card rounded-4 p-4 shadow-sm mb-4" style="border: 1px solid var(--border-soft);">
+                    <h5 class="text-heading fw-bold mb-4"><i class="bi bi-geo-alt text-primary me-2"></i> Teslimat Adresi</h5>
                     
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label text-secondary small fw-bold">Ad</label>
-                            <input type="text" name="firstName" value="@Model.FirstName" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark rounded-3 py-2" required>
+                            <input type="text" name="firstName" value="@Model.FirstName" class="form-control rounded-3 py-2" style="background-color: #f8fafc; border-color: var(--border-soft);" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-secondary small fw-bold">Soyad</label>
-                            <input type="text" name="lastName" value="@Model.LastName" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark rounded-3 py-2" required>
+                            <input type="text" name="lastName" value="@Model.LastName" class="form-control rounded-3 py-2" style="background-color: #f8fafc; border-color: var(--border-soft);" required>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-secondary small fw-bold">Açık Adres</label>
-                            <textarea name="addressLine" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark rounded-3 py-2" rows="3" required placeholder="Sokak, Mahalle, Bina No..."></textarea>
+                            <textarea name="addressLine" class="form-control rounded-3 py-2" rows="3" style="background-color: #f8fafc; border-color: var(--border-soft);" required placeholder="Sokak, Mahalle, Bina No..."></textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-secondary small fw-bold">Şehir</label>
-                            <select name="city" class="form-select bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark rounded-3 py-2">
+                            <select name="city" class="form-select rounded-3 py-2" style="background-color: #f8fafc; border-color: var(--border-soft);">
                                 <option value="Istanbul">İstanbul</option>
                                 <option value="Ankara">Ankara</option>
                                 <option value="Izmir">İzmir</option>
@@ -42,35 +42,35 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-secondary small fw-bold">Telefon</label>
-                            <input type="tel" name="phoneNumber" value="@Model.PhoneNumber" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark rounded-3 py-2" required placeholder="05xx xxx xxxx">
+                            <input type="tel" name="phoneNumber" value="@Model.PhoneNumber" class="form-control rounded-3 py-2" style="background-color: #f8fafc; border-color: var(--border-soft);" required placeholder="05xx xxx xxxx">
                         </div>
                     </div>
                 </div>
 
-                <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 shadow-lg">
-                    <h5 class="text-dark fw-bold mb-4"><i class="bi bi-credit-card text-primary me-2"></i> Ödeme Yöntemi</h5>
-                    <div class="form-check p-3 border border-primary bg-primary bg-opacity-10 rounded-3 mb-3">
-                        <input class="form-check-input ms-0 me-3" type="radio" name="payment" id="cc" checked>
-                        <label class="form-check-label text-dark fw-bold" for="cc">
-                            Kredi / Banka Kartı
-                        </label>
-                        <div class="float-end">
-                            <i class="bi bi-credit-card-2-front fs-4 opacity-50"></i>
+                <div class="card rounded-4 p-4 shadow-sm" style="border: 1px solid var(--border-soft);">
+                    <h5 class="text-heading fw-bold mb-4"><i class="bi bi-credit-card text-primary me-2"></i> Ödeme Yöntemi</h5>
+                    <div class="form-check p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background-color: rgba(15, 76, 110, 0.05); border: 1px solid var(--border-soft);">
+                        <div>
+                            <input class="form-check-input ms-1 me-3" type="radio" name="payment" id="cc" checked>
+                            <label class="form-check-label text-heading fw-bold" for="cc">
+                                Kredi / Banka Kartı
+                            </label>
                         </div>
+                        <i class="bi bi-credit-card-2-front fs-4 text-muted"></i>
                     </div>
                     
                     <div class="row g-3">
                         <div class="col-12">
-                            <input type="text" class="form-control bg-black bg-opacity-10 border-secondary border-opacity-50 text-dark py-2 rounded-3" placeholder="Kart Üzerindeki İsim">
+                            <input type="text" class="form-control py-2 rounded-3" style="background-color: #f8fafc; border-color: var(--border-soft);" placeholder="Kart Üzerindeki İsim">
                         </div>
                         <div class="col-12">
-                            <input type="text" class="form-control bg-black bg-opacity-10 border-secondary border-opacity-50 text-dark py-2 rounded-3" placeholder="Kart Numarası">
+                            <input type="text" class="form-control py-2 rounded-3" style="background-color: #f8fafc; border-color: var(--border-soft);" placeholder="Kart Numarası">
                         </div>
                         <div class="col-md-6">
-                            <input type="text" class="form-control bg-black bg-opacity-10 border-secondary border-opacity-50 text-dark py-2 rounded-3" placeholder="AA / YY">
+                            <input type="text" class="form-control py-2 rounded-3" style="background-color: #f8fafc; border-color: var(--border-soft);" placeholder="AA / YY">
                         </div>
                         <div class="col-md-6">
-                            <input type="text" class="form-control bg-black bg-opacity-10 border-secondary border-opacity-50 text-dark py-2 rounded-3" placeholder="CVV">
+                            <input type="text" class="form-control py-2 rounded-3" style="background-color: #f8fafc; border-color: var(--border-soft);" placeholder="CVV">
                         </div>
                     </div>
                 </div>
@@ -78,8 +78,8 @@
 
             <!-- Right: Order Summary -->
             <div class="col-lg-4">
-                <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 shadow-lg sticky-top" style="top: 100px;">
-                    <h5 class="text-dark fw-bold mb-4">Sipariş Özeti</h5>
+                <div class="card rounded-4 p-4 shadow-sm sticky-top" style="top: 100px; border: 1px solid var(--border-soft);">
+                    <h5 class="text-heading fw-bold mb-4">Sipariş Özeti</h5>
                     
                     <div class="mb-4">
                         @if (cart != null && cart.Items != null)
@@ -89,31 +89,31 @@
                                 <div class="d-flex align-items-center gap-3 mb-3">
                                     <img src="@item.ImageUrl" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;">
                                     <div class="flex-grow-1">
-                                        <h6 class="text-dark small fw-bold mb-0">@item.ProductName</h6>
+                                        <h6 class="text-heading small fw-bold mb-0">@item.ProductName</h6>
                                         <small class="text-secondary">@item.Quantity x @item.UnitPrice @item.Currency</small>
                                     </div>
-                                    <span class="text-dark small fw-bold">@item.TotalPrice.ToString("N2") @item.Currency</span>
+                                    <span class="text-heading small fw-bold">@item.TotalPrice.ToString("N2") @item.Currency</span>
                                 </div>
                             }
                         }
                     </div>
 
-                    <div class="border-top border-secondary border-opacity-25 pt-4">
+                    <div class="border-top pt-4" style="border-color: var(--border-soft) !important;">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-secondary">Ara Toplam</span>
-                            <span class="text-dark">@(cart?.TotalAmount.ToString("N2") ?? "0.00") @(cart?.Currency)</span>
+                            <span class="text-heading fw-semibold">@(cart?.TotalAmount.ToString("N2") ?? "0.00") @(cart?.Currency)</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-secondary">Kargo</span>
-                            <span class="text-success small">Ücretsiz</span>
+                            <span class="text-success small fw-semibold">Ücretsiz</span>
                         </div>
-                        <hr class="border-secondary opacity-25">
+                        <hr style="border-color: var(--border-soft);">
                         <div class="d-flex justify-content-between mb-4">
-                            <span class="text-dark fs-5 fw-bold">Toplam</span>
-                            <span class="text-warning fs-4 fw-bold">@(cart?.TotalAmount.ToString("N2") ?? "0.00") @(cart?.Currency)</span>
+                            <span class="text-heading fs-5 fw-bold">Toplam</span>
+                            <span class="fs-4 fw-bold" style="color: var(--brand-primary);">@(cart?.TotalAmount.ToString("N2") ?? "0.00") @(cart?.Currency)</span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-lg">
+                        <button type="submit" class="btn btn-brand-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
                             Ödemeyi Tamamla ve Sipariş Ver
                         </button>
                     </div>

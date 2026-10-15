@@ -3,39 +3,58 @@
     ViewData["Title"] = "Adreslerim";
 }
 
-<div class="container py-5">
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-size: 0.825rem; font-weight: 700;">
+                <i class="bi bi-geo-alt-fill"></i> TESLİMAT BİLGİLERİ
+            </div>
+            <h1 class="display-6 fw-bold mb-1 text-heading">Kayıtlı Adreslerim</h1>
+            <p class="text-body small mb-0 fw-medium">Siparişlerinizin hızlıca ulaştırılması için teslimat ve fatura adreslerinizi yönetin.</p>
+        </div>
+    </div>
+
     <div class="row g-4">
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="card bg-white border-0 p-3 rounded-4">
+            <div class="card border p-3 shadow-sm mb-4" style="border-color: var(--border-soft) !important; border-radius: 22px;">
                 <partial name="_AccountSidebar" />
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="col-lg-9">
-            <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 shadow-lg mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold mb-0">Adreslerim</h2>
-                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+            <div class="card shadow-sm p-4 mb-4" style="border: 1px solid var(--border-soft); border-radius: 22px;">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                    <div>
+                        <h4 class="fw-bold text-heading mb-1">Adres Listesi</h4>
+                        <p class="text-subtle small mb-0">Toplam @Model.Addresses.Count kayıtlı teslimat adresi</p>
+                    </div>
+                    <button type="button" class="btn btn-brand-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
                         <i class="bi bi-plus-lg me-1"></i> Yeni Adres Ekle
                     </button>
                 </div>
                 
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success alert-dismissible fade show rounded-3 bg-success bg-opacity-10 text-success border-success border-opacity-25" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 bg-success bg-opacity-10 text-success border-success border-opacity-25 mb-4" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
                     </div>
                 }
 
                 @if (!Model.Addresses.Any())
                 {
-                    <div class="text-center py-5 opacity-50">
-                        <i class="bi bi-geo-alt display-1 mb-3 d-block"></i>
-                        <p class="fs-5">Kayıtlı bir adresiniz bulunmamaktadır.</p>
-                        <p class="small text-secondary">Siparişlerinizin daha hızlı tamamlanması için bir teslimat adresi ekleyin.</p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-geo-alt display-2 mb-3 d-block text-subtle opacity-50"></i>
+                        <h5 class="fw-bold text-heading mb-2">Kayıtlı Adresiniz Bulunmuyor</h5>
+                        <p class="text-subtle small mx-auto mb-4" style="max-width: 400px;">
+                            Siparişlerinizin sorunsuz teslim edilmesi için ilk teslimat adresinizi hemen ekleyebilirsiniz.
+                        </p>
+                        <button type="button" class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                            <i class="bi bi-plus-circle me-1"></i> İlk Adresinizi Ekleyin
+                        </button>
                     </div>
                 }
                 else
@@ -44,35 +63,36 @@
                         @foreach (var address in Model.Addresses)
                         {
                             <div class="col-md-6">
-                                <div class="card bg-black bg-opacity-25 border-secondary border-opacity-50 h-100 rounded-4 transition-all address-card">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <h5 class="card-title text-dark fw-bold mb-0">
-                                                <i class="bi bi-house-door text-primary me-2"></i>@address.Title
-                                            </h5>
-                                            <div class="dropdown">
-                                                <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-                                                    <li><button type="button" class="dropdown-item border-0 bg-transparent" onclick="alert('Düzenleme arayüzü çok yakında kullanıma açılacaktır.')"><i class="bi bi-pencil me-2"></i>Düzenle</button></li>
-                                                    <li>
-                                                        <form action="/Account/DeleteAddress/@address.Id" method="post" onsubmit="return confirm('Bu adresi silmek istediğinize emin misiniz?');">
-                                                            <button type="submit" class="dropdown-item text-danger border-0 bg-transparent"><i class="bi bi-trash me-2"></i>Sil</button>
-                                                        </form>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                <div class="card h-100 p-4 shadow-sm position-relative" style="border: 1px solid var(--border-soft); border-radius: 20px;">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="text-heading fw-bold mb-0 d-flex align-items-center gap-2">
+                                            <i class="bi bi-house-door-fill text-primary"></i>
+                                            <span>@address.Title</span>
+                                        </h5>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-soft p-1 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%;" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                <li>
+                                                    <form action="/Account/DeleteAddress/@address.Id" method="post" onsubmit="return confirm('Bu adresi silmek istediğinize emin misiniz?');">
+                                                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                                            <i class="bi bi-trash"></i> Sil
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <p class="text-dark small fw-bold mb-1">@address.FirstName @address.LastName</p>
-                                        <p class="text-secondary small mb-3">
-                                            @address.AddressLine<br />
-                                            @address.District, @address.City<br />
-                                            @address.Country
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3 mt-auto">
-                                            <span class="text-dark small"><i class="bi bi-telephone ms-1 me-2 text-secondary"></i>@address.PhoneNumber</span>
-                                        </div>
+                                    </div>
+                                    <div class="text-body small flex-grow-1">
+                                        <p class="mb-1 fw-bold text-heading">@address.FirstName @address.LastName</p>
+                                        <p class="mb-2 text-subtle">@address.AddressLine</p>
+                                        <span class="badge rounded-pill bg-light text-dark border">
+                                            @address.District / @address.City
+                                        </span>
+                                    </div>
+                                    <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center" style="border-color: var(--border-subtle) !important;">
+                                        <small class="text-subtle"><i class="bi bi-telephone me-1"></i> @address.PhoneNumber</small>
                                     </div>
                                 </div>
                             </div>
@@ -84,53 +104,42 @@
     </div>
 </div>
 
-<!-- Add Address Modal -->
-<div class="modal fade" id="addAddressModal" tabindex="-1" aria-hidden="true">
+<!-- Yeni Adres Ekle Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-white border-secondary">
-            <div class="modal-header border-secondary border-opacity-25">
-                <h5 class="modal-title text-dark fw-bold">Yeni Adres Ekle</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold text-heading" id="addAddressModalLabel">
+                    <i class="bi bi-plus-circle-fill text-primary me-2"></i> Yeni Adres Ekle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
-            <form asp-action="AddAddress" method="post">
+            <form action="/Account/AddAddress" method="post">
                 <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label text-secondary small fw-bold">Adres Başlığı</label>
-                            <input type="text" name="title" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark" placeholder="Ev, İş vb." required>
+                    <div class="mb-3">
+                        <label class="form-label text-heading small fw-bold">Adres Başlığı</label>
+                        <input type="text" name="title" class="form-control" placeholder="Ev, İş, Kulüp vb." required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-heading small fw-bold">Şehir / İl</label>
+                            <input type="text" name="city" class="form-control" placeholder="İstanbul" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary small fw-bold">Şehir</label>
-                            <select name="city" class="form-select bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark" required>
-                                <option value="">Seçiniz...</option>
-                                <option value="Istanbul">İstanbul</option>
-                                <option value="Ankara">Ankara</option>
-                                <option value="Izmir">İzmir</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-secondary small fw-bold">İlçe</label>
-                            <input type="text" name="district" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark" required>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label text-secondary small fw-bold">Açık Adres</label>
-                            <textarea name="addressLine" class="form-control bg-black bg-opacity-25 border-secondary border-opacity-50 text-dark" rows="3" placeholder="Sokak, Mahalle, Bina No..." required></textarea>
+                        <div class="col-6">
+                            <label class="form-label text-heading small fw-bold">İlçe</label>
+                            <input type="text" name="district" class="form-control" placeholder="Kadıköy" required>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label text-heading small fw-bold">Açık Adres</label>
+                        <textarea name="addressLine" class="form-control" rows="3" placeholder="Sokak, Mahalle, Bina No..." required></textarea>
+                    </div>
                 </div>
-                <div class="modal-footer border-secondary border-opacity-25">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Adresi Kaydet</button>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-brand-primary px-4">Adresi Kaydet</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<style>
-    .address-card:hover {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        transform: translateY(-2px);
-    }
-</style>
-

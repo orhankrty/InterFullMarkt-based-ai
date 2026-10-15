@@ -25,7 +25,27 @@ public sealed class PlayerProfile : Profile
             .ForMember(dest => dest.CurrentClubName,
                 opt => opt.MapFrom(src => src.CurrentClub != null ? src.CurrentClub.Name : null))
             .ForMember(dest => dest.ImageUrl,
-                opt => opt.MapFrom(src => src.ImageUrl));
+                opt => opt.MapFrom(src => src.ImageUrl))
+            .AfterMap((src, dest) =>
+            {
+                var metrics = InterFullMarkt.Application.Common.Helpers.ScoutCalculator.CalculateMetrics(
+                    src.Position,
+                    src.GetAge(),
+                    src.Height,
+                    src.Weight,
+                    src.MarketValue?.Amount ?? 0);
+
+                dest.Pace = metrics.Pace;
+                dest.Shooting = metrics.Shooting;
+                dest.Passing = metrics.Passing;
+                dest.Dribbling = metrics.Dribbling;
+                dest.Defending = metrics.Defending;
+                dest.Physicality = metrics.Physicality;
+                dest.ScoutRating = metrics.ScoutRating;
+                dest.IsWonderkid = metrics.IsWonderkid;
+                dest.ScoutTier = metrics.ScoutTier;
+                dest.PotentialGrowth = metrics.PotentialGrowthPercentage;
+            });
 
         // CreatePlayerDto → Player Entity
         // Not: Bu mapping'in Create Handler'da kullanılır

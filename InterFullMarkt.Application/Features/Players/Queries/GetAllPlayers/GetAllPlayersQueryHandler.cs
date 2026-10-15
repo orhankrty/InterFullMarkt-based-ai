@@ -1,3 +1,5 @@
+using InterFullMarkt.Domain.Enums;
+
 namespace InterFullMarkt.Application.Features.Players.Queries.GetAllPlayers;
 
 using MediatR;
@@ -55,14 +57,27 @@ public sealed class GetAllPlayersQueryHandler : IRequestHandler<GetAllPlayersQue
                 .Include(p => p.CurrentClub)
                 .AsNoTracking();
 
-            // 2. Arama filtresi
+            // 2. Arama filtresi (Oyuncu, kulüp veya mevki optimizasyonu)
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                var searchLower = request.SearchTerm!.ToLower().Trim();
+                var searchLower = request.SearchTerm.Trim().ToLower();
+
+                // Mevki kelimelerini PlayerPosition enum değerleriyle eşleştir
+                var matchedPositions = new List<PlayerPosition>();
+                if (searchLower.Contains("kaleci") || searchLower.Contains("goalkeeper") || searchLower == "gk")
+                    matchedPositions.Add(PlayerPosition.GK);
+                if (searchLower.Contains("defans") || searchLower.Contains("stoper") || searchLower.Contains("bek") || searchLower.Contains("defender") || searchLower == "cb" || searchLower == "df")
+                    matchedPositions.Add(PlayerPosition.CB);
+                if (searchLower.Contains("orta") || searchLower.Contains("midfield") || searchLower.Contains("kanat") || searchLower == "cm" || searchLower == "mf")
+                    matchedPositions.Add(PlayerPosition.CM);
+                if (searchLower.Contains("forvet") || searchLower.Contains("santrfor") || searchLower.Contains("striker") || searchLower == "st" || searchLower == "fw")
+                    matchedPositions.Add(PlayerPosition.ST);
+
                 query = query.Where(p =>
                     (p.FullName != null && p.FullName.ToLower().Contains(searchLower)) ||
-                    (p.Nationality != null! && p.Nationality.CountryName.ToLower().Contains(searchLower)) ||
-                    (p.CurrentClub != null && p.CurrentClub.Name.ToLower().Contains(searchLower)));
+                    (p.Nationality != null! && (p.Nationality.CountryName.ToLower().Contains(searchLower) || p.Nationality.CountryCode.ToLower().Contains(searchLower))) ||
+                    (p.CurrentClub != null && (p.CurrentClub.Name.ToLower().Contains(searchLower) || (p.CurrentClub.ShortName != null && p.CurrentClub.ShortName.ToLower().Contains(searchLower)))) ||
+                    (matchedPositions.Count > 0 && matchedPositions.Contains(p.Position)));
             }
 
             // 3. Pozisyon filtresi
@@ -93,6 +108,25 @@ public sealed class GetAllPlayersQueryHandler : IRequestHandler<GetAllPlayersQue
             if (request.MaxMarketValue.HasValue)
             {
                 query = query.Where(p => p.MarketValue != null && p.MarketValue.Amount <= request.MaxMarketValue.Value);
+            }
+
+            // 5.1 Wonderkid ve Yaş Filtresi
+            if (request.OnlyWonderkids == true)
+            {
+                var wonderkidCutoff = DateTime.UtcNow.AddYears(-21);
+                query = query.Where(p => p.DateOfBirth >= wonderkidCutoff);
+            }
+            else if (request.MaxAge.HasValue)
+            {
+                var ageCutoff = DateTime.UtcNow.AddYears(-request.MaxAge.Value);
+                query = query.Where(p => p.DateOfBirth >= ageCutoff);
+            }
+
+            // 5.2 Ayak Filtresi
+            if (!string.IsNullOrWhiteSpace(request.PreferredFoot))
+            {
+                var footLower = request.PreferredFoot.Trim().ToLower();
+                query = query.Where(p => p.PreferredFoot.ToLower() == footLower);
             }
 
             // 6. Sıralama

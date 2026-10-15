@@ -1,76 +1,125 @@
-﻿@model InterFullMarkt.Application.DTOs.UpdatePlayerDto
+@model InterFullMarkt.Application.DTOs.UpdatePlayerDto
 @{
-    ViewData["Title"] = "Oyuncuyu Düzenle";
+    ViewData["Title"] = "Futbolcuyu Düzenle";
+    var clubs = ViewBag.Clubs as List<InterFullMarkt.Application.DTOs.ClubDto> ?? new();
 }
 
-<style>
-    .form-card {
-        background: var(--card-bg);
-        border-radius: 24px;
-        border: 1px solid var(--border);
-    }
-    .form-label { color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
-    .form-control, .form-select { background: #0f1225 !important; border: 1px solid var(--border) !important; color: var(--text-main) !important; }
-</style>
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="form-card p-5 shadow-lg">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold text-dark mb-2">Oyuncu Bilgilerini Güncelle</h2>
-                    <p class="text-secondary">@Model.FullName profilini düzenliyorsunuz.</p>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square text-primary fs-5"></i>
+                    <h5 class="fw-bold text-heading mb-0">Futbolcu Bilgilerini Güncelle</h5>
                 </div>
+                <a href="/Admin/Players" class="btn btn-sm btn-soft rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Listeye Dön
+                </a>
+            </div>
 
+            <div class="admin-card-body p-4 p-md-5">
                 <form method="post" action="/Admin/Players/Edit/@Model.Id">
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Currency" value="EUR" />
+
                     <div class="row g-4">
+                        <!-- Tam Ad Soyad -->
                         <div class="col-md-6">
-                            <label class="form-label">Tam Ad Soyad</label>
-                            <input asp-for="FullName" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Forma No</label>
-                            <input asp-for="JerseyNumber" type="number" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Milliyet Kodu (Örn: TR, AR)</label>
-                            <input asp-for="NationalityCode" class="form-control" required>
+                            <label class="form-label fw-semibold text-heading small">Tam Adı Soyadı <span class="text-danger">*</span></label>
+                            <input asp-for="FullName" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Doğum Tarihi</label>
-                            <input asp-for="DateOfBirth" type="date" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Boy (cm)</label>
-                            <input asp-for="Height" type="number" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Kilo (kg)</label>
-                            <input asp-for="Weight" type="number" class="form-control" required>
+                        <!-- Kulüp Seçimi -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Bağlı Olduğu Kulüp</label>
+                            <select asp-for="CurrentClubId" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="">Kulüpsüz (Serbest)</option>
+                                @foreach (var club in clubs)
+                                {
+                                    <option value="@club.Id" selected="@(club.Id == Model.CurrentClubId)">@club.Name</option>
+                                }
+                            </select>
                         </div>
 
+                        <!-- Pozisyon -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Pozisyon <span class="text-danger">*</span></label>
+                            <select asp-for="Position" class="form-select" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="1">Kaleci (GK)</option>
+                                <option value="2">Stoper (CB)</option>
+                                <option value="3">Sol Bek (LB)</option>
+                                <option value="4">Sağ Bek (RB)</option>
+                                <option value="5">Ön Libero (CDM)</option>
+                                <option value="6">Merkez Orta Saha (CM)</option>
+                                <option value="7">Ofansif Orta Saha (CAM)</option>
+                                <option value="8">Sol Kanat (LW)</option>
+                                <option value="9">Sağ Kanat (RW)</option>
+                                <option value="10">Santrfor (ST)</option>
+                            </select>
+                        </div>
+
+                        <!-- Milliyet -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Milliyet Kodu <span class="text-danger">*</span></label>
+                            <input asp-for="NationalityCode" class="form-control" placeholder="Örn: TR, AR, FR" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Doğum Tarihi -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Doğum Tarihi <span class="text-danger">*</span></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Boy -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Boy (cm) <span class="text-danger">*</span></label>
+                            <input asp-for="Height" type="number" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Kilo -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Kilo (kg) <span class="text-danger">*</span></label>
+                            <input asp-for="Weight" type="number" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Ayak -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Tercih Edilen Ayak</label>
+                            <select asp-for="PreferredFoot" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="Right">Sağ</option>
+                                <option value="Left">Sol</option>
+                                <option value="Both">Her İkisi</option>
+                            </select>
+                        </div>
+
+                        <!-- Forma No -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Forma No</label>
+                            <input asp-for="JerseyNumber" type="number" class="form-control" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Piyasa Değeri -->
                         <div class="col-md-6">
-                            <label class="form-label">Piyasa Değeri</label>
+                            <label class="form-label fw-semibold text-heading small">Piyasa Değeri (€) <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text bg-white border-secondary text-dark">â‚¬</span>
-                                <input asp-for="MarketValueAmount" type="number" class="form-control" required>
+                                <span class="input-group-text" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-heading);">€</span>
+                                <input asp-for="MarketValueAmount" type="number" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
                             </div>
                         </div>
+
+                        <!-- Profil Fotoğrafı URL -->
                         <div class="col-md-6">
-                            <label class="form-label">Profil Fotoğrafı URL</label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="https://...">
+                            <label class="form-label fw-semibold text-heading small">Profil Fotoğrafı URL</label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="https://..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3 mt-5">
-                        <a href="/Admin/Players" class="btn btn-outline-secondary rounded-pill px-5 flex-grow-1">Vazgeç</a>
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 flex-grow-1">Güncelle</button>
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <a href="/Admin/Players" class="btn btn-soft rounded-pill px-4">Vazgeç</a>
+                        <button type="submit" class="btn btn-brand-primary rounded-pill px-5">Değişiklikleri Kaydet</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-

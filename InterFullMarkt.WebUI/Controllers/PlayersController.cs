@@ -45,11 +45,12 @@ public sealed class PlayersController : Controller
     [Route("")]
     [Route("Index")]
     public async Task<IActionResult> Index(int page = 1, string? search = null, string? sortBy = null,
-        string? positions = null, string? nationalities = null, decimal? minValue = null, decimal? maxValue = null)
+        string? positions = null, string? nationalities = null, decimal? minValue = null, decimal? maxValue = null,
+        bool? wonderkids = null, int? maxAge = null, string? foot = null)
     {
         try
         {
-            _logger.LogInformation("Oyuncular sayfası istendi: Page={Page}, Search={Search}", page, search);
+            _logger.LogInformation("Oyuncular sayfası istendi: Page={Page}, Search={Search}, Wonderkids={Wonderkids}", page, search, wonderkids);
 
             var query = new GetAllPlayersQuery
             {
@@ -60,7 +61,10 @@ public sealed class PlayersController : Controller
                 Positions = positions,
                 Nationalities = nationalities,
                 MinMarketValue = minValue,
-                MaxMarketValue = maxValue
+                MaxMarketValue = maxValue,
+                OnlyWonderkids = wonderkids,
+                MaxAge = maxAge,
+                PreferredFoot = foot
             };
 
             var result = await _mediator.Send(query);
@@ -78,6 +82,9 @@ public sealed class PlayersController : Controller
             ViewData["Nationalities"] = nationalities;
             ViewData["MinValue"] = minValue;
             ViewData["MaxValue"] = maxValue;
+            ViewData["Wonderkids"] = wonderkids;
+            ViewData["MaxAge"] = maxAge;
+            ViewData["Foot"] = foot;
 
             return View(result);
         }

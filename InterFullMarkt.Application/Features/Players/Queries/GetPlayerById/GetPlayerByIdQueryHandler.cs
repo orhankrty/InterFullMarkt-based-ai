@@ -24,6 +24,7 @@ public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQue
     {
         var player = await _dbContext.Players
             .Include(p => p.CurrentClub)
+                .ThenInclude(c => c!.League)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == request.PlayerId, cancellationToken);
 
@@ -32,6 +33,13 @@ public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQue
 
         var age = DateTime.Now.Year - player.DateOfBirth.Year;
         if (player.DateOfBirth.Date > DateTime.Now.AddYears(-age)) age--;
+
+        var metrics = InterFullMarkt.Application.Common.Helpers.ScoutCalculator.CalculateMetrics(
+            player.Position,
+            age,
+            player.Height,
+            player.Weight,
+            player.MarketValue?.Amount ?? 0);
 
         var result = new GetPlayerByIdResult
         {
@@ -59,12 +67,49 @@ public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQue
             
             CreatedDate = player.CreatedDate,
             
+            // Scout & Radar Metrics
+            Pace = metrics.Pace,
+            Shooting = metrics.Shooting,
+            Passing = metrics.Passing,
+            Dribbling = metrics.Dribbling,
+            Defending = metrics.Defending,
+            Physicality = metrics.Physicality,
+            ScoutRating = metrics.ScoutRating,
+            IsWonderkid = metrics.IsWonderkid,
+            ScoutTier = metrics.ScoutTier,
+            PotentialGrowthPercentage = metrics.PotentialGrowthPercentage,
+
             // Generate simulated market history for last 12 months
             MarketValueHistory = GenerateMarketValueHistory(player.MarketValue?.Amount ?? 40_000_000),
             
-            // Transfer history (currently empty, will be extended when Transfer query implemented)
+            // Transfer history
             TransferHistory = new List<TransferHistoryPoint>()
         };
+
+        // Transfer geçmişini veritabanından çek
+        var dbTransfers = await _dbContext.Transfers
+            .Where(t => t.PlayerId == player.Id)
+            .OrderByDescending(t => t.TransferDate)
+            .Take(10)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        if (dbTransfers.Count > 0)
+        {
+            var clubIds = dbTransfers.Select(t => t.FromClubId).Concat(dbTransfers.Select(t => t.ToClubId)).Distinct().ToList();
+            var clubDict = await _dbContext.Clubs
+                .Where(c => clubIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Name, cancellationToken);
+
+            result.TransferHistory = dbTransfers.Select(t => new TransferHistoryPoint
+            {
+                TransferDate = t.TransferDate,
+                FromClub = clubDict.TryGetValue(t.FromClubId, out var fc) ? fc : "Bilinmeyen Kulüp",
+                ToClub = clubDict.TryGetValue(t.ToClubId, out var tc) ? tc : "Bilinmeyen Kulüp",
+                Fee = t.Fee != null ? $"€{(t.Fee.Amount / 1_000_000):F1}M" : "Bedelsiz",
+                TransferType = t.TransferType
+            }).ToList();
+        }
 
         // 🤖 Real AI Google Gemini Forecast & Scouting Analysis
         var leagueCoeff = player.CurrentClub?.League?.Coefficient ?? 8.0m;
@@ -78,11 +123,6 @@ public sealed class GetPlayerByIdQueryHandler : IRequestHandler<GetPlayerByIdQue
         result.AiScoutingCategory = scoutingReport.Category;
         result.AiPros = scoutingReport.Pros;
         result.AiSimilarPlayers = scoutingReport.SimilarArchetypes;
-
-        // 🤖 AI Forecast Calculation (UI'da göstermek üzere DTO'ya eklenebilir)
-        // İpucu: GetPlayerByIdResult sınıfına 'AiForecastFormatted' özelliğini ekleyerek bunu View'e aktarabilirsiniz.
-        // var aiForecast = CalculateAiForecast(player, result.MarketValueAmount);
-        // result.AiForecastFormatted = aiForecast;
 
         return result;
     }

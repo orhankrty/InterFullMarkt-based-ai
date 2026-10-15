@@ -1,8 +1,7 @@
 namespace InterFullMarkt.Infrastructure.Identity;
 
-using InterFullMarkt.Application.Abstractions;
 using System.Security.Cryptography;
-using System;
+using InterFullMarkt.Application.Abstractions;
 
 public class AuthService : IAuthService
 {
@@ -23,11 +22,25 @@ public class AuthService : IAuthService
 
     public bool VerifyPassword(string password, string savedHash)
     {
-        byte[] hashBytes = Convert.FromBase64String(savedHash);
-        byte[] salt = new byte[SaltSize];
-        Array.Copy(hashBytes, 0, salt, 0, SaltSize);
-        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, KeySize);
-        for (int i = 0; i < KeySize; i++) if (hashBytes[i + SaltSize] != hash[i]) return false;
-        return true;
+        if (string.IsNullOrEmpty(savedHash)) return false;
+        try
+        {
+            byte[] hashBytes = Convert.FromBase64String(savedHash);
+            if (hashBytes.Length != SaltSize + KeySize) return false;
+
+            byte[] salt = new byte[SaltSize];
+            Array.Copy(hashBytes, 0, salt, 0, SaltSize);
+
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, KeySize);
+            for (int i = 0; i < KeySize; i++)
+            {
+                if (hashBytes[i + SaltSize] != hash[i]) return false;
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

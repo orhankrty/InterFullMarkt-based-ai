@@ -1,26 +1,27 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using InterFullMarkt.Application.Abstractions;
 using InterFullMarkt.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace InterFullMarkt.WebUI.Controllers;
 
 public class AuthController : Controller
 {
     private readonly IDbContext _dbContext;
+    private readonly IAuthService _authService;
 
-    public AuthController(IDbContext dbContext)
+    public AuthController(IDbContext dbContext, IAuthService authService)
     {
         _dbContext = dbContext;
+        _authService = authService;
     }
 
     [HttpGet]
     public IActionResult Login()
     {
-        // Eğer kullanıcı zaten giriş yapmışsa ana sayfaya yönlendir
         if (User.Identity != null && User.Identity.IsAuthenticated)
             return RedirectToAction("Index", "Players");
             
@@ -30,34 +31,37 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
-        // Mock (Sahte) Giriş İşlemi - İleride veritabanı (Identity) ile değiştirilecek
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            ViewData["Error"] = "Lütfen kullanıcı adı ve şifre giriniz.";
+            return View();
+        }
+
+        // 1. Hızlı Demo Admin Girişi
         if (username == "admin" && password == "123456")
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
+            var adminUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (adminUser == null)
             {
-                user = new User(username, "admin@interfullmarkt.com", "hashed_pw", "Admin")
+                adminUser = new User(username, "admin@interfullmarkt.com", _authService.HashPassword("123456"), "Admin")
                 {
                     FirstName = "System",
                     LastName = "Admin",
                     CreatedByUserId = "System"
                 };
-                _dbContext.Users.Add(user);
-                await _dbContext.SaveChangesAsync(CancellationToken.None);
+                _dbContext.Users.Add(adminUser);
+                await _dbContext.SaveChangesAsync();
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
+            await SignInUserAsync(adminUser.Username, adminUser.Email, adminUser.Role);
+            return RedirectToAction("Index", "Admin");
+        }
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, 
-                new ClaimsPrincipal(claimsIdentity));
-
+        // 2. Veritabanındaki Kayıtlı Kullanıcı Kontrolü
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == username);
+        if (user != null && _authService.VerifyPassword(password, user.PasswordHash))
+        {
+            await SignInUserAsync(user.Username, user.Email, user.Role);
             return RedirectToAction("Index", "Players");
         }
 
@@ -83,34 +87,31 @@ public class AuthController : Controller
             return View();
         }
 
-        // Mock (Sahte) Kayıt ve Giriş İşlemi - İleride veritabanı eklenecek
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null)
+        if (await _dbContext.Users.AnyAsync(u => u.Username == username))
         {
-            user = new User(username, email, "hashed_pw", "User")
-            {
-                FirstName = username,
-                LastName = "User",
-                CreatedByUserId = "System"
-            };
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync(CancellationToken.None);
+            ViewData["Error"] = "Bu kullanıcı adı zaten alınmış.";
+            return View();
         }
 
-        var claims = new List<Claim>
+        if (await _dbContext.Users.AnyAsync(u => u.Email == email))
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, "User")
+            ViewData["Error"] = "Bu e-posta adresiyle zaten kayıt yapılmış.";
+            return View();
+        }
+
+        var hashedPassword = _authService.HashPassword(password);
+        var newUser = new User(username, email, hashedPassword, "User")
+        {
+            FirstName = username,
+            LastName = "Üye",
+            CreatedByUserId = "System"
         };
+        _dbContext.Users.Add(newUser);
+        await _dbContext.SaveChangesAsync();
 
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await SignInUserAsync(newUser.Username, newUser.Email, newUser.Role);
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme, 
-            new ClaimsPrincipal(claimsIdentity));
-
-        TempData["Success"] = "Kayıt başarılı! Sisteme hoş geldiniz.";
+        TempData["Success"] = "Kayıt başarılı! InterFullMarkt'a hoş geldiniz.";
         return RedirectToAction("Index", "Players");
     }
 
@@ -118,5 +119,20 @@ public class AuthController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Players");
+    }
+
+    private async Task SignInUserAsync(string username, string email, string role)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme, 
+            new ClaimsPrincipal(claimsIdentity));
     }
 }

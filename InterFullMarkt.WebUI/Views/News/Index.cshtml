@@ -1,163 +1,251 @@
 @{
-    ViewData["Title"] = "Haber Bülteni";
+    ViewData["Title"] = "Haber & Transfer Bülteni";
 }
 
-<!-- Başlık -->
-<div class="row mb-4">
-    <div class="col-12">
-        <h1 class="display-5 fw-bold">
-            <i class="bi bi-newspaper"></i> Haber Bülteni
-        </h1>
-        <p class="text-secondary">Futbol dünyasından en güncel haberler, transfer gelişmeleri ve önemli olaylar</p>
-    </div>
-</div>
+<style>
+    .news-carousel-container {
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 3rem;
+    }
 
-<!-- Ana Carousel -->
-<div class="row mb-5">
-    <div class="col-12">
-        <div id="footballNewsCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" style="border: 1px solid #2a2f4c;">
+    .carousel-caption-layer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(7, 13, 23, 0.95) 85%);
+        padding: 4rem 2.5rem 2.5rem 2.5rem;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    .news-card-layer {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 22px;
+        overflow: hidden;
+        transition: all 0.25s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-subtle);
+    }
+    .news-card-layer:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--brand-primary);
+    }
+    .news-card-photo {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .tag-badge-pill {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container py-3">
+    <!-- Başlık & Giriş -->
+    <div class="d-flex align-items-center justify-content-between mb-4 mt-2">
+        <div>
+            <span class="badge rounded-pill mb-2 px-3 py-1" style="background: var(--brand-primary-soft); color: var(--brand-primary); font-weight: 700;">
+                <i class="bi bi-newspaper me-1"></i> INTERFULLMARKT MEDYA & ANALİZ
+            </span>
+            <h1 class="display-6 fw-bold text-heading mb-1">Haber & Transfer Bülteni</h1>
+            <p class="text-body small mb-0 fw-medium">Uluslararası futbol arenasından doğrulanmış transferler, scouting keşifleri ve lig analizleri.</p>
+        </div>
+    </div>
+
+    <!-- Ana Manşet Carousel -->
+    <div class="news-carousel-container position-relative">
+        <div id="footballNewsCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Haber 1"></button>
-                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="1" aria-label="Haber 2"></button>
-                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="2" aria-label="Haber 3"></button>
+                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#footballNewsCarousel" data-bs-slide-to="2"></button>
             </div>
             <div class="carousel-inner">
                 <!-- Haber 1 -->
                 <div class="carousel-item active" data-bs-interval="5000">
-                    <img src="https://images.unsplash.com/photo-1518605368461-1e1252220a4c?w=1200&q=80" class="d-block w-100" alt="Şampiyonlar Ligi" style="height: 400px; object-fit: cover; filter: brightness(0.45);">
-                    <div class="carousel-caption d-none d-md-block pb-5">
-                        <span class="badge bg-danger mb-2 px-3 py-2 rounded-pill">Sıcak Gelişme</span>
-                        <h2 class="fw-bold text-dark" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Şampiyonlar Ligi'nde Erken Final!</h2>
-                        <p class="fs-5 text-muted" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Devler Ligi çeyrek final eşleşmeleri belli oldu. Avrupa'nın devleri kupaya uzanmak için kıyasıya mücadele edecek.</p>
+                    <img src="https://images.unsplash.com/photo-1518605368461-1e1252220a4c?w=1200&q=80" class="d-block w-100" alt="Şampiyonlar Ligi" style="height: 420px; object-fit: cover;">
+                    <div class="carousel-caption-layer">
+                        <span class="badge bg-danger mb-2 px-3 py-1 rounded-pill fw-bold">FLAŞ GELİŞME</span>
+                        <h2 class="fw-bold text-white mb-2">Şampiyonlar Ligi Çeyrek Final Kuraları Çekildi</h2>
+                        <p class="fs-6 text-light opacity-90 mb-0" style="max-width: 680px;">
+                            Avrupa'nın kulüpler düzeyindeki en prestijli turnuvasında nefes kesen eşleşmeler belli oldu.
+                        </p>
                     </div>
                 </div>
+
                 <!-- Haber 2 -->
                 <div class="carousel-item" data-bs-interval="5000">
-                    <img src="https://images.unsplash.com/photo-1574629810360-7efbb2278458?w=1200&q=80" class="d-block w-100" alt="Transfer Haberleri" style="height: 400px; object-fit: cover; filter: brightness(0.45);">
-                    <div class="carousel-caption d-none d-md-block text-start" style="bottom: 2.5rem;">
-                        <span class="badge bg-warning text-dark mb-2 p-2 fs-6 shadow">💼 Transfer Dosyası</span>
-                        <h2 class="fw-bold text-dark" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Yılın Transfer Bombası Patladı</h2>
-                        <p class="fs-5 text-muted" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Aylardır süren transfer görüşmeleri sonuçlandı, dünya yıldızı rekor bir bonservis bedeliyle yeni kulübüne imzayı attı.</p>
+                    <img src="https://images.unsplash.com/photo-1574629810360-7efbb2278458?w=1200&q=80" class="d-block w-100" alt="Transfer Haberleri" style="height: 420px; object-fit: cover;">
+                    <div class="carousel-caption-layer">
+                        <span class="badge bg-warning text-dark mb-2 px-3 py-1 rounded-pill fw-bold">TRANSFER DOSYASI</span>
+                        <h2 class="fw-bold text-white mb-2">Yaz Dönemi İçin 100M€'luk Transfer Hamlesi</h2>
+                        <p class="fs-6 text-light opacity-90 mb-0" style="max-width: 680px;">
+                            Dev kulüpler genç yeteneklerin peşinde; scout ekiplerinin raporları doğrultusunda ilk resmi temaslar başladı.
+                        </p>
                     </div>
                 </div>
+
                 <!-- Haber 3 -->
                 <div class="carousel-item" data-bs-interval="5000">
-                    <img src="https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?w=1200&q=80" class="d-block w-100" alt="Altın Top" style="height: 400px; object-fit: cover; filter: brightness(0.45);">
-                    <div class="carousel-caption d-none d-md-block text-start" style="bottom: 2.5rem;">
-                        <span class="badge bg-success mb-2 p-2 fs-6 shadow"><i class="bi bi-trophy"></i> Ödül Töreni</span>
-                        <h2 class="fw-bold text-dark" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Altın Top Sahibini Buldu</h2>
-                        <p class="fs-5 text-muted" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Sezonun en iyi oyuncusuna verilen prestijli ödül, görkemli bir törenle sahibine teslim edildi.</p>
+                    <img src="https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?w=1200&q=80" class="d-block w-100" alt="Scouting" style="height: 420px; object-fit: cover;">
+                    <div class="carousel-caption-layer">
+                        <span class="badge bg-success mb-2 px-3 py-1 rounded-pill fw-bold">SCOUT RAPORU</span>
+                        <h2 class="fw-bold text-white mb-2">Yılın Wonderkid Adayları Açıklandı</h2>
+                        <p class="fs-6 text-light opacity-90 mb-0" style="max-width: 680px;">
+                            InterFullMarkt Scouting Algoritması, 21 yaş altı en yüksek potansiyele sahip ilk 10 futbolcuyu duyurdu.
+                        </p>
                     </div>
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#footballNewsCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Önceki</span>
+                <span class="carousel-control-prev-icon"></span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#footballNewsCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Sonraki</span>
+                <span class="carousel-control-next-icon"></span>
             </button>
         </div>
     </div>
+
+    <!-- Haber Kartları Grid -->
+    <div class="d-flex align-items-center mb-3">
+        <h4 class="fw-bold text-heading mb-0">
+            <i class="bi bi-fire text-danger me-2"></i> Güncel Gelişmeler
+        </h4>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Haber 1 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600&q=80" class="news-card-photo" alt="Süper Lig">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill bg-danger text-white">Süper Lig</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">Galatasaray Derbi Öncesi Moral Depoladı</h5>
+                    <p class="text-body small flex-grow-1">
+                        Sarı-kırmızılı ekip antrenmanlarını tamamladı; teknik heyet taktiksel varyasyonlar üzerinde duruyor.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 2 saat önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haber 2 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=80" class="news-card-photo" alt="Transfer">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill" style="background: var(--brand-accent-soft); color: var(--brand-accent-text);">Transfer</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">Avrupa Devlerinin Gözü Wonderkidlerde</h5>
+                    <p class="text-body small flex-grow-1">
+                        Yetenek avcıları Türkiye ve Güney Amerika liglerinde yoğun gözlem mesaisinde.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 5 saat önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haber 3 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80" class="news-card-photo" alt="Milli Takım">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill border" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">Milli Takım</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">A Milli Takım Aday Kadrosu Şekillendi</h5>
+                    <p class="text-body small flex-grow-1">
+                        Teknik direktör kadroya yeni genç yetenekleri davet etti; ilk antrenman yarın Riva'da.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 8 saat önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haber 4 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=600&q=80" class="news-card-photo" alt="Stadyum">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill bg-success text-white">Tesisleşme</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">Yeni Nesil Altyapı Akademisi Kuruluyor</h5>
+                    <p class="text-body small flex-grow-1">
+                        Kulüpler genç akademi oyuncularının veri odaklı gelişimi için modern teknoloji merkezleri açıyor.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 1 gün önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haber 5 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?w=600&q=80" class="news-card-photo" alt="UEFA">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill border" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">UEFA Puanı</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">Ülke Puanında Kritik Yükseliş</h5>
+                    <p class="text-body small flex-grow-1">
+                        Son galibiyetlerle birlikte Türkiye ülke puanı sıralamasında bir basamak daha tırmandı.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 1 gün önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haber 6 -->
+        <div class="col-lg-4 col-md-6">
+            <div class="news-card-layer">
+                <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80" class="news-card-photo" alt="Scout">
+                <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="mb-2">
+                        <span class="tag-badge-pill bg-secondary text-white">Scout Analizi</span>
+                    </div>
+                    <h5 class="fw-bold text-heading mb-2">Ayın En Değerli 11'i Belirlendi</h5>
+                    <p class="text-body small flex-grow-1">
+                        Algoritmamızın maç verilerine dayanarak oluşturduğu en iyi 11'de sürpriz isimler yer aldı.
+                    </p>
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center text-subtle small fw-medium" style="border-color: var(--border-subtle) !important;">
+                        <span><i class="bi bi-clock me-1"></i> 2 gün önce</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">Devamı <i class="bi bi-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<!-- Haber Kartları -->
-<div class="row mb-4">
-    <div class="col-12">
-        <h3 class="fw-bold mb-3"><i class="bi bi-fire text-danger"></i> Son Dakika Haberleri</h3>
-    </div>
-</div>
-
-<div class="row g-4 mb-5">
-    <!-- Haber Kartı 1 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600&q=80" class="card-img-top" alt="Galatasaray" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-danger mb-2"><i class="bi bi-record-circle"></i> Süper Lig</span>
-                <h5 class="card-title text-dark fw-bold">Galatasaray Derbi Öncesi Moral Buldu</h5>
-                <p class="card-text text-secondary small">Cim-bom'un Avrupa kupalarındaki başarısı, taraftarları heyecanlandırmaya devam ediyor. Teknik ekip derbi hazırlıklarını sürdürüyor.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 2 saat önce</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Haber Kartı 2 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=600&q=80" class="card-img-top" alt="Transfer" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-warning text-dark mb-2"><i class="bi bi-cash-coin"></i> Transfer</span>
-                <h5 class="card-title text-dark fw-bold">Yeni Sezon İçin Dev Transfer Operasyonu</h5>
-                <p class="card-text text-secondary small">Kulüpler yaz transfer dönemine hazırlanıyor. Avrupa'nın en değerli oyuncuları masada, sürpriz isimler gündemde.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 5 saat önce</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Haber Kartı 3 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80" class="card-img-top" alt="Milli Takım" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-info mb-2"><i class="bi bi-flag"></i> Milli Takım</span>
-                <h5 class="card-title text-dark fw-bold">A Milli Takım Kadrosu Açıklandı</h5>
-                <p class="card-text text-secondary small">Teknik direktör yeni dönem A Milli Takım kadrosunu resmen açıkladı. Genç yıldızlar ilk kez davet edildi.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 8 saat önce</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Haber Kartı 4 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=600&q=80" class="card-img-top" alt="Stadyum" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-success mb-2"><i class="bi bi-building"></i> Altyapı</span>
-                <h5 class="card-title text-dark fw-bold">Yeni Stadyum Projesi Onaylandı</h5>
-                <p class="card-text text-secondary small">60.000 kişilik yeni stadyum projesi kamu-özel sektör ortaklığıyla hayata geçirilecek. İnşaat 2027'de başlıyor.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 1 gün önce</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Haber Kartı 5 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?w=600&q=80" class="card-img-top" alt="Kupa" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-primary mb-2"><i class="bi bi-globe-europe-africa"></i> Avrupa</span>
-                <h5 class="card-title text-dark fw-bold">UEFA Ülke Puanı Sıralaması Güncellendi</h5>
-                <p class="card-text text-secondary small">Türk kulüplerinin Avrupa'daki başarıları, ülke puanı sıralamasında Türkiye'yi yukarı taşımaya devam ediyor.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 1 gün önce</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Haber Kartı 6 -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-sm" style="background-color: #1a1f3a;">
-            <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80" class="card-img-top" alt="Antrenman" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-                <span class="badge bg-secondary mb-2">⚽ Analiz</span>
-                <h5 class="card-title text-dark fw-bold">Sezonun En İyi 11'i Belirlendi</h5>
-                <p class="card-text text-secondary small">Futbol veri analistleri, sezonun en başarılı oyuncularını belirleyerek ideal 11'i oluşturdu. Listedeki sürpriz isimler dikkat çekiyor.</p>
-            </div>
-            <div class="card-footer bg-transparent border-top border-secondary">
-                <small class="text-secondary"><i class="bi bi-clock"></i> 2 gün önce</small>
-            </div>
-        </div>
-    </div>
-</div>
-

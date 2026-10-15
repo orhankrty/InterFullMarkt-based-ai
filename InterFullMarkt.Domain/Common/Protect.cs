@@ -59,23 +59,33 @@ public static class Protect
         }
 
         /// <summary>
-        /// Gelecek tarih olup olmadığını kontrol eder
+        /// Gelecekte bir tarih olup olmadığını kontrol eder
         /// </summary>
-        public static DateTime InTheFuture(DateTime dateTime, string paramName)
+        public static DateTime InTheFuture(DateTime value, string paramName)
         {
-            if (dateTime > DateTime.UtcNow)
-                throw new ArgumentException($"'{paramName}' gelecek bir tarih olamaz", paramName);
-            return dateTime;
+            if (value > DateTime.UtcNow)
+                throw new ArgumentException($"'{paramName}' gelecekteki bir tarih olamaz", paramName);
+            return value;
         }
 
         /// <summary>
-        /// Geçmiş tarih olup olmadığını kontrol eder
+        /// Değerin aralıkta olup olmadığını kontrol eder
         /// </summary>
-        public static DateTime InThePast(DateTime dateTime, string paramName)
+        public static int OutOfRange(int value, int min, int max, string paramName)
         {
-            if (dateTime < DateTime.UtcNow)
-                throw new ArgumentException($"'{paramName}' geçmiş bir tarih olamaz", paramName);
-            return dateTime;
+            if (value < min || value > max)
+                throw new ArgumentOutOfRangeException(paramName, $"'{paramName}' {min} ile {max} arasında olmalıdır");
+            return value;
+        }
+
+        /// <summary>
+        /// Değerin aralıkta olup olmadığını kontrol eder (decimal)
+        /// </summary>
+        public static decimal OutOfRange(decimal value, decimal min, decimal max, string paramName)
+        {
+            if (value < min || value > max)
+                throw new ArgumentOutOfRangeException(paramName, $"'{paramName}' {min} ile {max} arasında olmalıdır");
+            return value;
         }
     }
 }

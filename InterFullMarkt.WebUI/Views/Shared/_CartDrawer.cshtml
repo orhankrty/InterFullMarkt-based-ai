@@ -1,27 +1,27 @@
-﻿<div class="offcanvas offcanvas-end bg-white text-dark border-start border-secondary" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel" style="width: 400px;">
-    <div class="offcanvas-header border-bottom border-secondary py-4">
-        <h5 class="offcanvas-title fw-bold" id="cartDrawerLabel"><i class="bi bi-cart3 text-primary me-2"></i> Sepetiniz</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<div class="offcanvas offcanvas-end border-start" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel" style="width: 400px; background: var(--surface-bg); color: var(--text-body); border-color: var(--border-soft) !important;">
+    <div class="offcanvas-header border-bottom py-4" style="border-color: var(--border-soft) !important;">
+        <h5 class="offcanvas-title fw-bold text-heading" id="cartDrawerLabel"><i class="bi bi-cart3 text-primary me-2"></i> Sepetiniz</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
     </div>
     <div class="offcanvas-body p-0">
         <div id="cartItemsContainer" class="p-4">
             <!-- AJAX will fill this -->
             <div class="text-center py-5 opacity-50">
-                <i class="bi bi-cart-x display-1 mb-3 d-block"></i>
-                <p>Sepetiniz şu an boş.</p>
+                <i class="bi bi-cart-x display-1 mb-3 d-block text-subtle"></i>
+                <p class="text-subtle">Sepetiniz şu an boş.</p>
             </div>
         </div>
     </div>
-    <div class="offcanvas-footer p-4 border-top border-secondary bg-black bg-opacity-25">
+    <div class="offcanvas-footer p-4 border-top" style="background: var(--surface-subtle); border-color: var(--border-soft) !important;">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <span class="text-secondary fs-5">Toplam:</span>
-            <span id="cartTotalText" class="fs-3 fw-bold text-warning">0.00 â‚¬</span>
+            <span class="text-subtle fs-5">Toplam:</span>
+            <span id="cartTotalText" class="fs-4 fw-bold" style="color: var(--brand-primary);">0.00 €</span>
         </div>
         <div class="d-grid gap-2">
-            <a href="/Checkout" class="btn btn-primary btn-lg rounded-pill fw-bold py-3 shadow-lg">
+            <a href="/Checkout" class="btn btn-brand-primary btn-lg rounded-pill fw-bold py-3 shadow-sm">
                 <i class="bi bi-credit-card me-2"></i> Güvenli Ödeme
             </a>
-            <button onclick="clearCart()" class="btn btn-outline-secondary btn-sm rounded-pill mt-2 border-0 opacity-50 text-decoration-underline">
+            <button onclick="clearCart()" class="btn btn-soft btn-sm rounded-pill mt-2">
                 Sepeti Boşalt
             </button>
         </div>
@@ -30,14 +30,16 @@
 
 <style>
     .cart-item {
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         border-radius: 12px;
-        background: var(--card-bg);
+        background: var(--surface-subtle);
+        border: 1px solid var(--border-soft);
         margin-bottom: 1rem;
     }
     .cart-item:hover {
-        background: rgba(255, 255, 255, 0.07);
-        transform: translateX(-5px);
+        background: var(--canvas-bg);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-subtle);
     }
 </style>
 
@@ -57,7 +59,7 @@
                     <p>Sepetiniz şu an boş.</p>
                 </div>
             `;
-            totalText.innerText = "0.00 â‚¬";
+            totalText.innerText = "0.00 €";
             if (badge) badge.innerText = "0";
             return;
         }
@@ -69,7 +71,7 @@
                     <h6 class="mb-0 text-dark fw-bold">${item.productName}</h6>
                     <div class="d-flex justify-content-between align-items-center mt-1">
                         <small class="text-secondary">${item.quantity} x ${item.unitPrice} ${item.currency}</small>
-                        <span class="text-warning fw-bold">${item.totalPrice.toFixed(2)} ${item.currency}</span>
+                        <span class="fw-bold" style="color: var(--brand-primary);">${item.totalPrice.toFixed(2)} ${item.currency}</span>
                     </div>
                 </div>
                 <button onclick="removeFromCart('${item.productId}')" class="btn btn-sm text-danger opacity-50 hover-opacity-100">

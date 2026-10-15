@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Yeni Mağaza Ürünü Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-box-seam text-warning fs-5"></i>
+                    <h5 class="fw-bold text-heading mb-0">Yeni Ürün Tanımlama</h5>
+                </div>
+                <a href="/Admin/Products" class="btn btn-sm btn-soft rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Kataloğa Dön
+                </a>
+            </div>
+
+            <div class="admin-card-body p-4 p-md-5">
+                <form method="post" action="/Admin/Products/Create">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold text-heading small">Ürün Adı <span class="text-danger">*</span></label>
+                            <input name="name" class="form-control" placeholder="Örn: 2024/25 İç Saha Forması" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Kategori <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="Forma">Forma</option>
+                                <option value="Krampon">Krampon</option>
+                                <option value="Aksesuar">Aksesuar</option>
+                                <option value="Giyim">Giyim</option>
+                                <option value="Ekipman">Ekipman</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Satış Fiyatı (€) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-heading);">€</span>
+                                <input name="price" type="number" step="0.01" class="form-control" placeholder="Örn: 89.90" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Stok Adedi <span class="text-danger">*</span></label>
+                            <input name="stockQuantity" type="number" min="0" class="form-control" placeholder="Örn: 50" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-heading small">Ürün Görseli URL</label>
+                            <input name="imageUrl" class="form-control" placeholder="https://..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-heading small">Açıklama</label>
+                            <textarea name="description" rows="3" class="form-control" placeholder="Ürün kumaşı, teknolojisi veya özellikleri hakkında bilgi..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="isFeatured" value="true" id="isFeaturedCheck">
+                                <label class="form-check-label text-heading fw-semibold" for="isFeaturedCheck">
+                                    Mağazada Öne Çıkarılan Ürün Olarak Göster
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <a href="/Admin/Products" class="btn btn-soft rounded-pill px-4">İptal</a>
+                        <button type="submit" class="btn btn-brand-primary rounded-pill px-5">Ürünü Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

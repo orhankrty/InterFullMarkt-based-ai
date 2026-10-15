@@ -1,0 +1,79 @@
+@model InterFullMarkt.Domain.Entities.Product
+@{
+    ViewData["Title"] = "Ürünü Düzenle: " + Model.Name;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square text-warning fs-5"></i>
+                    <h5 class="fw-bold text-heading mb-0">Ürün Bilgilerini Güncelle</h5>
+                </div>
+                <a href="/Admin/Products" class="btn btn-sm btn-soft rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Kataloğa Dön
+                </a>
+            </div>
+
+            <div class="admin-card-body p-4 p-md-5">
+                <form method="post" action="/Admin/Products/Edit/@Model.Id">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold text-heading small">Ürün Adı <span class="text-danger">*</span></label>
+                            <input name="name" value="@Model.Name" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Kategori <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="Forma" selected="@(Model.Category == "Forma")">Forma</option>
+                                <option value="Krampon" selected="@(Model.Category == "Krampon")">Krampon</option>
+                                <option value="Aksesuar" selected="@(Model.Category == "Aksesuar")">Aksesuar</option>
+                                <option value="Giyim" selected="@(Model.Category == "Giyim")">Giyim</option>
+                                <option value="Ekipman" selected="@(Model.Category == "Ekipman")">Ekipman</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Satış Fiyatı (€) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-heading);">€</span>
+                                <input name="price" type="number" step="0.01" value="@(Model.Price?.Amount ?? 0)" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Stok Adedi <span class="text-danger">*</span></label>
+                            <input name="stockQuantity" type="number" min="0" value="@Model.StockQuantity" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-heading small">Ürün Görseli URL</label>
+                            <input name="imageUrl" value="@Model.ImageUrl" class="form-control" placeholder="https://..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-heading small">Açıklama</label>
+                            <textarea name="description" rows="3" class="form-control" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">@Model.Description</textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="isFeatured" value="true" id="isFeaturedCheck" checked="@Model.IsFeatured">
+                                <label class="form-check-label text-heading fw-semibold" for="isFeaturedCheck">
+                                    Mağazada Öne Çıkarılan Ürün Olarak Göster
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <a href="/Admin/Products" class="btn btn-soft rounded-pill px-4">Vazgeç</a>
+                        <button type="submit" class="btn btn-brand-primary rounded-pill px-5">Değişiklikleri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

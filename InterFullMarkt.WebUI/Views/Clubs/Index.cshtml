@@ -1,0 +1,163 @@
+@model List<InterFullMarkt.Application.DTOs.ClubDto>
+@{
+    ViewData["Title"] = "Kulüpler Kataloğu";
+}
+
+<style>
+    .clubs-header-card {
+        background: var(--hero-gradient);
+        border: 1px solid var(--hero-card-border);
+        border-radius: 28px;
+        padding: 3rem 2rem;
+        margin-top: 1rem;
+        margin-bottom: 2.5rem;
+        text-align: center;
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
+        color: #ffffff;
+    }
+
+    .club-card-layer {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 22px;
+        transition: all 0.25s ease;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--shadow-subtle);
+    }
+
+    .club-card-layer:hover {
+        transform: translateY(-5px);
+        border-color: var(--brand-primary);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .club-badge-stage {
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface-subtle);
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .club-badge-stage img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .color-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid rgba(0,0,0,0.2);
+    }
+</style>
+
+<div class="container py-3">
+    <!-- Hero / Tanıtım (Koyu Kontrastlı Kulüp Ağı Bannerı) -->
+    <div class="clubs-header-card">
+        <span class="badge rounded-pill mb-2 px-3 py-1" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 700;">
+            <i class="bi bi-shield-check me-1"></i> ULUSLARARASI KULÜP AĞI
+        </span>
+        <h1 class="display-6 fw-bold text-white mb-2">Kulüpler Kataloğu</h1>
+        <p class="small mx-auto mb-0 fw-medium" style="color: #cbd5e1; max-width: 550px;">
+            Sistemde kayıtlı dünya kulüplerinin stadyum, renk, kadro hacmi ve toplam piyasa değerlerini detaylıca inceleyin.
+        </p>
+    </div>
+
+    <!-- Kulüpler Grid -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+            <div class="py-4">
+                <i class="bi bi-shield-x text-subtle display-2 mb-3 d-block opacity-50"></i>
+                <h5 class="fw-bold text-heading">Kayıtlı Kulüp Bulunamadı</h5>
+                <p class="text-subtle small mx-auto mb-4" style="max-width: 400px;">
+                    Veritabanında henüz kulüp kaydı bulunmamaktadır.
+                </p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h5 class="fw-bold text-heading mb-0">
+                <i class="bi bi-grid-fill text-primary me-2"></i> Kulüpler (@Model.Count)
+            </h5>
+        </div>
+
+        <div class="row g-4 mb-5">
+            @foreach (var club in Model)
+            {
+                <div class="col-xl-4 col-md-6">
+                    <div class="club-card-layer">
+                        <div class="club-badge-stage">
+                            @if (!string.IsNullOrEmpty(club.LogoUrl))
+                            {
+                                <img src="@club.LogoUrl" alt="@club.Name" onerror="this.onerror=null; this.src='/images/default-avatar.png';" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-shield-shaded display-4 text-subtle opacity-50"></i>
+                            }
+                        </div>
+
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="fw-bold text-heading mb-0">@club.Name</h5>
+                                    <small class="text-subtle fw-medium">@club.ShortName • Kurulma: @club.FoundingYear</small>
+                                </div>
+                                <span class="badge border fw-bold" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">Kulüp</span>
+                            </div>
+
+                            <div class="mb-3 small">
+                                <p class="text-body mb-2 fw-medium">
+                                    <i class="bi bi-geo-alt text-primary me-1"></i> @club.StadiumName
+                                </p>
+                                
+                                @if (!string.IsNullOrEmpty(club.Colors))
+                                {
+                                    <div class="d-flex align-items-center gap-2">
+                                        <small class="text-subtle fw-semibold">Renkler:</small>
+                                        <div class="d-flex gap-1 align-items-center">
+                                            @foreach (var color in club.Colors.Split('-', StringSplitOptions.RemoveEmptyEntries))
+                                            {
+                                                var trimmed = color.Trim();
+                                                <span class="color-dot" style="background-color: @trimmed;" title="@trimmed"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="row g-2 border-top pt-3 mt-auto text-center rounded-3 p-2" style="background: var(--surface-subtle); border-color: var(--border-subtle) !important;">
+                                <div class="col-6">
+                                    <small class="text-subtle d-block fw-bold" style="font-size: 0.7rem;">KADRO HACMİ</small>
+                                    <span class="fw-bold text-heading small">@club.SquadCount Oyuncu</span>
+                                </div>
+                                <div class="col-6 border-start" style="border-color: var(--border-soft) !important;">
+                                    <small class="text-subtle d-block fw-bold" style="font-size: 0.7rem;">TOPLAM DEĞER</small>
+                                    <span class="fw-bold small" style="color: var(--brand-primary);">€@((club.TotalSquadValue ?? 0).ToString("N0"))</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 text-end">
+                                <a href="@Url.Action("Index", "Players", new { search = club.Name })" class="btn btn-sm btn-brand-primary px-3">
+                                    Oyuncuları Keşfet <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

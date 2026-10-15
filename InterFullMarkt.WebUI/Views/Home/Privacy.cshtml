@@ -1,6 +1,53 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Gizlilik Politikası ve KVKK";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Başlık Kartı -->
+            <div class="card border-0 rounded-4 p-4 p-md-5 mb-4 shadow-sm" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background: var(--brand-primary-soft); color: var(--brand-primary); font-size: 1.5rem;">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 fw-bold text-heading mb-1">Gizlilik ve Kişisel Verilerin Korunması</h1>
+                        <p class="text-subtle mb-0 small">InterFullMarkt platformu kullanıcı verilerinin güvenliğine en üst düzeyde önem verir.</p>
+                    </div>
+                </div>
+
+                <hr style="border-color: var(--border-subtle);" />
+
+                <div class="mt-4">
+                    <h5 class="fw-bold text-heading mb-2"><i class="bi bi-file-earmark-text text-primary me-2"></i> 1. Veri Sorumlusu ve Kapsam</h5>
+                    <p class="text-subtle small mb-4">
+                        6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, InterFullMarkt olarak kişisel verilerinizi hukuka ve dürüstlük kurallarına uygun, doğru ve güncel şekilde işlemekte ve saklamaktayız.
+                    </p>
+
+                    <h5 class="fw-bold text-heading mb-2"><i class="bi bi-database-check text-success me-2"></i> 2. İşlenen Veriler ve Toplanma Amacı</h5>
+                    <p class="text-subtle small mb-4">
+                        Kullanıcı hesabı oluşturma, scouting takip listelerinin kaydedilmesi, e-ticaret mağaza siparişlerinin adresinize ulaştırılması ve yapay zekâ destekli fiyat tahmin modellerinin kişiselleştirilmesi amacıyla ad-soyad, e-posta, teslimat adresi ve oturum verileri işlenmektedir.
+                    </p>
+
+                    <h5 class="fw-bold text-heading mb-2"><i class="bi bi-lock-fill text-warning me-2"></i> 3. Veri Güvenliği ve Şifreleme</h5>
+                    <p class="text-subtle small mb-4">
+                        Kullanıcı parolaları veritabanında asla açık metin olarak saklanmaz; endüstri standardı PBKDF2/SHA-256 kriptografik algoritmaları ile tuzlanarak (salt) şifrelenir. Oturum açma işlemleri güvenli çerez (cookie) ve SSL/TLS şifreleme katmanı üzerinden gerçekleştirilir.
+                    </p>
+
+                    <h5 class="fw-bold text-heading mb-2"><i class="bi bi-person-check text-info me-2"></i> 4. Kullanıcı Hakları</h5>
+                    <p class="text-subtle small mb-0">
+                        KVKK'nın 11. maddesi kapsamında dilediğiniz zaman hesabınızı silebilir, verilerinizin güncellenmesini talep edebilir veya sistem üzerindeki işlem geçmişinize profil sayfanızdan erişebilirsiniz.
+                    </p>
+                </div>
+
+                <div class="mt-5 pt-3 border-top d-flex justify-content-between align-items-center" style="border-color: var(--border-subtle) !important;">
+                    <small class="text-subtle">Son Güncelleme: Ekim 2026</small>
+                    <a href="/" class="btn btn-brand-primary rounded-pill px-4 btn-sm">
+                        <i class="bi bi-house me-1"></i> Anasayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

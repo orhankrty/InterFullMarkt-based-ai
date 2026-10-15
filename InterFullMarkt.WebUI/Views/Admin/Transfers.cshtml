@@ -1,0 +1,85 @@
+@model List<InterFullMarkt.Domain.Entities.Transfer>
+@{
+    ViewData["Title"] = "Transfer Denetimi & Audit";
+    var clubs = ViewBag.Clubs as Dictionary<Guid, string> ?? new();
+    var players = ViewBag.Players as Dictionary<Guid, string> ?? new();
+}
+
+<!-- Üst Başlık & Özet -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h5 class="fw-bold text-heading mb-1">Transfer Geçmişi ve Kayıtları</h5>
+                <p class="text-subtle small mb-0">Kulüpler arası gerçekleştirilen tüm bonservis, kiralama ve serbest transfer hareketleri.</p>
+            </div>
+            <div>
+                <span class="badge badge-soft-success rounded-pill px-3 py-2 fs-6">@Model.Count Transfer Kaydı</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transferler Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-arrow-left-right me-2 text-success"></i> Gerçekleşen Transferler
+        </h6>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Futbolcu</th>
+                    <th>Eski Kulüp</th>
+                    <th>Yeni Kulüp</th>
+                    <th>Transfer Tipi</th>
+                    <th class="text-end">Transfer Bedeli</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-subtle py-5">
+                            <i class="bi bi-arrow-left-right fs-1 d-block mb-2 text-subtle opacity-50"></i>
+                            Henüz kayıtlı bir transfer hareketi bulunmuyor.
+                        </td>
+                    </tr>
+                }
+                @foreach (var t in Model)
+                {
+                    var pName = players.ContainsKey(t.PlayerId) ? players[t.PlayerId] : "Bilinmeyen Oyuncu";
+                    var fromName = clubs.ContainsKey(t.FromClubId) ? clubs[t.FromClubId] : "Bilinmeyen Kulüp";
+                    var toName = clubs.ContainsKey(t.ToClubId) ? clubs[t.ToClubId] : "Bilinmeyen Kulüp";
+
+                    <tr>
+                        <td>
+                            <div class="small fw-semibold text-heading">@t.TransferDate.ToString("dd.MM.yyyy")</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">@t.TransferDate.ToString("HH:mm")</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@pName</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">ID: @t.PlayerId.ToString().Substring(0, 8)</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-warning rounded-pill px-2 py-1">@fromName</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-primary rounded-pill px-2 py-1">@toName</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-info rounded-pill">@(t.TransferType ?? "Bonservis")</span>
+                        </td>
+                        <td class="text-end">
+                            <span class="fw-bold text-success fs-6">€@((t.Fee?.Amount ?? 0).ToString("N0"))</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

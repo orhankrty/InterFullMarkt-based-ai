@@ -1,0 +1,124 @@
+@model InterFullMarkt.Application.DTOs.CreatePlayerDto
+@{
+    ViewData["Title"] = "Yeni Futbolcu Ekle";
+    var clubs = ViewBag.Clubs as List<InterFullMarkt.Application.DTOs.ClubDto> ?? new();
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill text-primary fs-5"></i>
+                    <h5 class="fw-bold text-heading mb-0">Futbolcu Kayıt Formu</h5>
+                </div>
+                <a href="/Admin/Players" class="btn btn-sm btn-soft rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Listeye Dön
+                </a>
+            </div>
+
+            <div class="admin-card-body p-4 p-md-5">
+                <form method="post" action="/Admin/Players/Create">
+                    <div class="row g-4">
+                        <!-- Ad Soyad -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Futbolcu Tam Adı <span class="text-danger">*</span></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Örn: Arda Güler" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Kulüp -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Bağlı Olduğu Kulüp</label>
+                            <select asp-for="CurrentClubId" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="">Kulüpsüz (Serbest Oyuncu)</option>
+                                @foreach (var club in clubs)
+                                {
+                                    <option value="@club.Id">@club.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Pozisyon -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Pozisyon <span class="text-danger">*</span></label>
+                            <select asp-for="Position" class="form-select" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="1">Kaleci (GK)</option>
+                                <option value="2">Stoper (CB)</option>
+                                <option value="3">Sol Bek (LB)</option>
+                                <option value="4">Sağ Bek (RB)</option>
+                                <option value="5">Ön Libero (CDM)</option>
+                                <option value="6">Merkez Orta Saha (CM)</option>
+                                <option value="7">Ofansif Orta Saha (CAM)</option>
+                                <option value="8">Sol Kanat (LW)</option>
+                                <option value="9">Sağ Kanat (RW)</option>
+                                <option value="10">Santrfor (ST)</option>
+                            </select>
+                        </div>
+
+                        <!-- Ülke Kodu -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Milliyet (ISO Kodu) <span class="text-danger">*</span></label>
+                            <input asp-for="NationalityCode" class="form-control" placeholder="Örn: TR, DE, FR, BR" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Doğum Tarihi -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-heading small">Doğum Tarihi <span class="text-danger">*</span></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Boy -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Boy (cm) <span class="text-danger">*</span></label>
+                            <input asp-for="Height" type="number" min="150" max="220" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Kilo -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Kilo (kg) <span class="text-danger">*</span></label>
+                            <input asp-for="Weight" type="number" min="40" max="150" class="form-control" required style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Tercih Edilen Ayak -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Tercih Edilen Ayak</label>
+                            <select asp-for="PreferredFoot" class="form-select" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="Right">Sağ</option>
+                                <option value="Left">Sol</option>
+                                <option value="Both">Her İkisi</option>
+                            </select>
+                        </div>
+
+                        <!-- Forma No -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-heading small">Forma No</label>
+                            <input asp-for="JerseyNumber" type="number" min="1" max="99" class="form-control" placeholder="Örn: 10" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+
+                        <!-- Piyasa Değeri -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Başlangıç Piyasa Değeri (€)</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-heading);">€</span>
+                                <input asp-for="InitialMarketValue" type="number" step="10000" class="form-control" placeholder="Örn: 25000000" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                            </div>
+                        </div>
+
+                        <!-- Profil Fotoğrafı URL -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-heading small">Profil Fotoğrafı URL</label>
+                            <input asp-for="Currency" type="hidden" value="EUR" />
+                            <input name="ImageUrl" class="form-control" placeholder="https://..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <a href="/Admin/Players" class="btn btn-soft rounded-pill px-4">İptal</a>
+                        <button type="submit" class="btn btn-brand-primary rounded-pill px-5">Futbolcuyu Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

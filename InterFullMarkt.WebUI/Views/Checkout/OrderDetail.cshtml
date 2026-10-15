@@ -1,4 +1,4 @@
-﻿@model InterFullMarkt.Domain.Entities.Order
+@model InterFullMarkt.Domain.Entities.Order
 @{
     ViewData["Title"] = "Sipariş Başarılı";
 }
@@ -6,48 +6,48 @@
 <div class="container py-5 text-center">
     <!-- Success Celebration -->
     <div class="mb-5 animate-bounce">
-        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-lg mb-4" style="width: 100px; height: 100px;">
-            <i class="bi bi-check-lg text-dark display-4"></i>
+        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto shadow-sm mb-4" style="width: 88px; height: 88px; background: rgba(16, 185, 129, 0.15); color: #059669;">
+            <i class="bi bi-check-lg display-5 fw-bold"></i>
         </div>
-        <h1 class="display-4 fw-bold text-dark">Siparişiniz <span class="text-success">Alındı!</span></h1>
-        <p class="text-secondary fs-5 mt-3">Teşekkür ederiz. Sipariş numaranız: <span class="text-dark fw-bold">#@Model.Id.ToString().Substring(0, 8).ToUpper()</span></p>
+        <h1 class="display-5 fw-bold text-heading">Siparişiniz <span class="text-success">Alındı!</span></h1>
+        <p class="text-secondary fs-5 mt-2">Teşekkür ederiz. Sipariş numaranız: <span class="text-heading fw-bold">#@Model.Id.ToString().Substring(0, 8).ToUpper()</span></p>
     </div>
 
     <!-- Order Summary -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
-            <div class="card bg-white border-secondary border-opacity-25 rounded-4 p-4 text-start shadow-lg">
-                <h5 class="text-dark fw-bold mb-4 border-bottom border-secondary border-opacity-25 pb-3">Sipariş Detayı</h5>
+            <div class="card rounded-4 p-4 text-start shadow-sm" style="border: 1px solid var(--border-soft);">
+                <h5 class="text-heading fw-bold mb-4 border-bottom pb-3" style="border-color: var(--border-soft) !important;">Sipariş Detayı</h5>
                 
                 @foreach (var item in Model.OrderItems)
                 {
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-secondary rounded-pill">@item.Quantity</span>
+                            <span class="badge bg-light text-secondary border rounded-pill">@item.Quantity adet</span>
                             <span class="text-secondary">@item.Product?.Name</span>
                         </div>
-                        <span class="text-dark fw-bold">@item.TotalPrice.ToString()</span>
+                        <span class="text-heading fw-semibold">@item.TotalPrice.ToString()</span>
                     </div>
                 }
 
-                <div class="border-top border-secondary border-opacity-25 mt-4 pt-4">
-                    <div class="d-flex justify-content-between">
+                <div class="border-top mt-4 pt-4" style="border-color: var(--border-soft) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
                         <span class="text-secondary">Genel Toplam</span>
-                        <span class="text-warning fs-4 fw-bold">@Model.TotalAmount.ToString()</span>
+                        <span class="fs-4 fw-bold" style="color: var(--brand-primary);">@Model.TotalAmount.ToString()</span>
                     </div>
                 </div>
 
-                <div class="bg-black bg-opacity-25 rounded-3 p-3 mt-4">
-                    <small class="text-secondary d-block mb-1">Teslimat Adresi:</small>
-                    <p class="text-dark small mb-0">@Model.ShippingAddress</p>
+                <div class="rounded-3 p-3 mt-4" style="background: #f8fafc; border: 1px solid var(--border-soft);">
+                    <small class="text-secondary d-block mb-1 fw-semibold">Teslimat Adresi:</small>
+                    <p class="text-heading small mb-0">@Model.ShippingAddress</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="d-flex justify-content-center gap-3">
-        <a href="/Store" class="btn btn-outline-secondary rounded-pill px-4">Alışverişe Devam Et</a>
-        <a href="/Account/Orders" class="btn btn-primary rounded-pill px-5 fw-bold shadow-lg">Siparişlerime Git</a>
+        <a href="/Store" class="btn btn-soft rounded-pill px-4">Alışverişe Devam Et</a>
+        <a href="/Account/Orders" class="btn btn-brand-primary rounded-pill px-5 fw-bold shadow-sm">Siparişlerime Git</a>
     </div>
 </div>
 

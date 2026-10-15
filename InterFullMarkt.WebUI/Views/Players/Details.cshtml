@@ -1,401 +1,378 @@
-﻿@model InterFullMarkt.Application.Features.Players.Queries.GetPlayerById.GetPlayerByIdResult
+@model InterFullMarkt.Application.Features.Players.Queries.GetPlayerById.GetPlayerByIdResult
 
 @{
-    ViewData["Title"] = $"{Model.FullName} - Oyuncu Detayları";
-    var age = Model.Age;
+    ViewData["Title"] = $"{Model.FullName} - Scout Raporu & Detayları";
 }
 
 <style>
-    :root {
-        --primary-color: #0066ff;
-        --secondary-color: #ffd700;
-        --dark-bg: #0a0e27;
-        --card-bg: #1a1f3a;
-        --text-muted: #e0e0e0;
-    }
-
-    .player-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        color: white;
-        padding: 3rem 1rem;
-        border-radius: 1rem;
+    /* Profil Hero Kartı (Koyu Stadyum Degradesi) */
+    .player-profile-card {
+        background: var(--hero-gradient);
+        border: 1px solid var(--hero-card-border);
+        border-radius: 28px;
+        padding: 2.75rem 2.5rem;
+        margin-top: 1rem;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
+        position: relative;
+        color: #ffffff;
     }
 
-    .player-avatar {
-        width: 120px;
-        height: 120px;
+    .player-profile-avatar {
+        width: 135px;
+        height: 135px;
         border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        font-weight: bold;
-        border: 3px solid white;
+        object-fit: cover;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.3);
+        background: var(--surface-bg);
     }
 
-    .stat-card {
-        background-color: var(--card-bg);
-        border-left: 4px solid var(--primary-color);
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-card h6 {
-        color: var(--text-muted);
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-card .value {
-        font-size: 1.75rem;
-        font-weight: bold;
-        color: var(--secondary-color);
-    }
-
-    .market-value-highlight {
-        background-color: rgba(255, 215, 0, 0.1);
-        border-left-color: var(--secondary-color) !important;
-    }
-
-    .chart-container {
-        background-color: var(--card-bg);
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .tabs {
-        display: flex;
-        gap: 0;
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .tab-button {
-        flex: 1;
-        padding: 1rem;
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-    }
-
-    .tab-button.active {
-        color: var(--secondary-color);
-        border-bottom-color: var(--secondary-color);
-    }
-
-    .tab-button:hover {
-        color: var(--primary-color);
-    }
-
-    .transfer-table {
-        width: 100%;
-        background-color: var(--card-bg);
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
-
-    .transfer-table thead {
-        background-color: rgba(0, 102, 255, 0.15);
-    }
-
-    .transfer-table td {
-        padding: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: var(--text-muted);
-    }
-
-    .transfer-table tbody tr:hover {
-        background-color: rgba(0, 102, 255, 0.05);
-    }
-
-    .position-badge {
-        display: inline-block;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 2rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-
-    .back-button {
+    .scout-score-pill {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        font-weight: 800;
+        font-size: 0.9rem;
+        padding: 5px 14px;
+        border-radius: var(--radius-pill);
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        color: var(--primary-color);
-        text-decoration: none;
-        margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
+        gap: 6px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
-    .back-button:hover {
-        color: var(--secondary-color);
-        transform: translateX(-3px);
+    .wonderkid-pill {
+        background: var(--brand-accent-soft);
+        color: var(--brand-accent-text);
+        font-weight: 800;
+        font-size: 0.85rem;
+        padding: 5px 14px;
+        border-radius: var(--radius-pill);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid rgba(217, 119, 6, 0.35);
     }
 
-    /* AI Scout Styles */
-    .ai-scout-card {
-        background: linear-gradient(135deg, rgba(61, 90, 254, 0.1), rgba(255, 255, 255, 0.95));
-        border: 1px solid var(--accent-color);
+    /* 4 Temel İstatistik Kutuları */
+    .metric-info-box {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        border-radius: 20px;
+        padding: 1.6rem 1.5rem;
+        height: 100%;
+        box-shadow: var(--shadow-subtle);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .metric-info-box:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-card);
+        border-color: var(--brand-primary);
+    }
+    .metric-info-box .label {
+        font-size: 0.775rem;
+        color: var(--text-subtle);
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.35rem;
+    }
+    .metric-info-box .val {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text-heading);
+    }
+    .metric-info-box .sub {
+        font-size: 0.8rem;
+        color: var(--text-body);
+        font-weight: 500;
+    }
+
+    .market-value-accent-box {
+        background: var(--surface-bg);
+        border: 1.5px solid var(--brand-accent);
+    }
+    .market-value-accent-box .val {
+        color: var(--brand-accent);
+    }
+
+    /* Kart Panelleri */
+    .panel-layer-box {
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
         border-radius: 24px;
         padding: 2rem;
-        position: relative;
-        overflow: hidden;
+        box-shadow: var(--shadow-subtle);
+        margin-bottom: 2rem;
     }
-    .ai-scout-card::after {
-        content: 'AI SCOUT';
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 3rem;
-        font-weight: 900;
-        opacity: 0.05;
-        font-style: italic;
-    }
-    .pro-tag {
-        background: rgba(0, 102, 255, 0.1);
-        border: 1px solid rgba(0, 102, 255, 0.3);
-        padding: 5px 15px;
+
+    .pro-pill {
+        background: var(--surface-subtle);
+        border: 1px solid var(--border-soft);
+        color: var(--text-heading);
+        padding: 6px 14px;
         border-radius: 50px;
         font-size: 0.85rem;
-        margin-right: 8px;
+        font-weight: 700;
+        margin-right: 6px;
         margin-bottom: 8px;
         display: inline-block;
     }
-    .similar-item {
-        background: var(--card-bg);
+
+    .similar-item-badge {
+        background: var(--surface-subtle);
         border-radius: 12px;
-        padding: 10px 15px;
-        margin-bottom: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 8px 14px;
+        border: 1px solid var(--border-soft);
+        font-weight: 600;
+        color: var(--text-heading);
+        font-size: 0.875rem;
     }
 </style>
 
-<div class="container mt-4">
-    <a href="@Url.Action("Index")" class="back-button">
-        <i class="bi bi-arrow-left"></i> Oyunculara Dön
-    </a>
+<div class="container py-3">
+    <!-- Üst Kontrol Barı -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <a href="@Url.Action("Index")" class="btn btn-soft">
+            <i class="bi bi-arrow-left me-1"></i> Keşif Konsoluna Dön
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <button onclick="toggleWatchlist('@Model.Id', this)" class="btn btn-soft" id="detailsWatchlistBtn">
+                <i class="bi bi-bookmark-star me-1 text-warning"></i> Gözlem Listesi
+            </button>
+            <a href="@Url.Action("Compare", "Players", new { id1 = Model.Id })" class="btn btn-brand-primary">
+                <i class="bi bi-pie-chart me-1"></i> Kıyasla
+            </a>
+        </div>
+    </div>
 
-    <!-- Player Header -->
-    <div class="player-header">
-        <div class="row align-items-center">
-            <div class="col-md-2 text-center mb-3 mb-md-0">
-                <div class="player-avatar">
-                    @Model.FullName.First().ToString().ToUpper()
+    <!-- Oyuncu Profil Hero Kartı (Koyu Kontrastlı) -->
+    <div class="player-profile-card">
+        <div class="row align-items-center g-4">
+            <div class="col-md-auto text-center">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.FullName" class="player-profile-avatar" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                }
+                else
+                {
+                    <div class="player-profile-avatar d-flex align-items-center justify-content-center text-primary fs-1 fw-bold">
+                        @Model.FullName.First()
+                    </div>
+                }
+            </div>
+            <div class="col-md">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge px-3 py-1 rounded-pill fw-bold" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">@Model.Position</span>
+                    <span class="scout-score-pill">
+                        <i class="bi bi-radar"></i> Scout Rating: @Model.ScoutRating / 100
+                    </span>
+                    @if (Model.IsWonderkid)
+                    {
+                        <span class="wonderkid-pill">
+                            <i class="bi bi-stars"></i> Wonderkid (+%@Model.PotentialGrowth Potansiyel)
+                        </span>
+                    }
+                </div>
+                
+                <h1 class="display-6 fw-bold mb-1 text-white">@Model.FullName</h1>
+                
+                <div class="d-flex flex-wrap align-items-center gap-3 fw-medium small" style="color: #cbd5e1;">
+                    <span><i class="bi bi-flag me-1"></i> @Model.Nationality @Model.NationalityFlag</span>
+                    @if (!string.IsNullOrEmpty(Model.ClubName))
+                    {
+                        <span><i class="bi bi-shield-check me-1 text-info"></i> @Model.ClubName</span>
+                    }
+                    @if (Model.JerseyNumber.HasValue)
+                    {
+                        <span><i class="bi bi-hash"></i> Forma: #@Model.JerseyNumber</span>
+                    }
                 </div>
             </div>
-            <div class="col-md-10">
-                <div class="row">
+        </div>
+    </div>
+
+    <!-- 4'lü Temel İstatistik Kartları -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-info-box">
+                <div class="label">Yaş & Doğum Tarihi</div>
+                <div class="val">@Model.Age <span class="fs-6 text-subtle fw-normal">Yaş</span></div>
+                <div class="sub">@Model.DateOfBirth.ToString("dd MMMM yyyy")</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-info-box">
+                <div class="label">Fiziksel Özellikler</div>
+                <div class="val">@Model.Height <span class="fs-6 text-subtle fw-normal">cm</span></div>
+                <div class="sub">Kilo: @Model.Weight kg • Ayak: @Model.PreferredFoot</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-info-box">
+                <div class="label">Gelişim Potansiyeli</div>
+                <div class="val" style="color: var(--brand-accent);">+%@Model.PotentialGrowth</div>
+                <div class="sub">FM & Scout Algoritması</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-info-box market-value-accent-box">
+                <div class="label" style="color: var(--brand-accent);">Piyasa Değeri</div>
+                <div class="val">@Model.MarketValue</div>
+                <div class="sub">Güncelleme: @Model.CreatedDate.ToString("dd.MM.yyyy")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Radar Grafiği & AI Scouting Raporu -->
+    <div class="row g-4 mb-4">
+        <!-- Sol: 6 Eksenli Radar Grafiği -->
+        <div class="col-lg-6">
+            <div class="panel-layer-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-heading mb-0">
+                        <i class="bi bi-radar text-primary me-2"></i> 6 Eksenli Yetenek Radarı
+                    </h5>
+                    <span class="badge border" style="background: var(--surface-subtle); color: var(--text-subtle); border-color: var(--border-soft) !important;">FIFA / FM Standartları</span>
+                </div>
+                <p class="text-body small mb-3 fw-medium">
+                    Oyuncunun mevkisine, fiziksel parametrelerine ve lig seviyesine göre hesaplanmış yetenek puanları.
+                </p>
+                
+                <div style="position: relative; height: 320px;">
+                    <canvas id="scoutRadarChart"></canvas>
+                </div>
+
+                <div class="row g-2 mt-3 pt-3 border-top text-center" style="border-color: var(--border-subtle) !important;">
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Hız</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Pace</span>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Şut</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Shooting</span>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Pas</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Passing</span>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Dribling</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Dribbling</span>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Defans</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Defending</span>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <small class="text-subtle d-block fw-bold">Fizik</small>
+                        <span class="fw-bold text-heading fs-6">@Model.Physicality</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ: Gemini AI Destekli Scout Raporu -->
+        <div class="col-lg-6">
+            <div class="panel-layer-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-heading mb-0">
+                        <i class="bi bi-robot text-primary me-2"></i> Gemini Destekli Scout Raporu
+                    </h5>
+                    <span class="badge border" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">Scouting AI</span>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-subtle text-uppercase fw-bold d-block mb-1">Oyuncu Rolü & Kategorisi</small>
+                    <span class="fs-5 fw-bold" style="color: var(--brand-primary);">@Model.AiScoutingCategory</span>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-subtle text-uppercase fw-bold d-block mb-2">Belirgin Güçlü Yönler (Pros)</small>
                     <div>
-                        <h1 class="mb-2">
-                            @Model.FullName
-                            <span class="position-badge">@Model.Position</span>
-                        </h1>
-                        <p class="mb-1" style="font-size: 1.1rem;">
-                            <span style="font-size: 2rem;">@Model.NationalityFlag</span>
-                            @Model.Nationality
-                        </p>
-                        @if (!string.IsNullOrEmpty(Model.ClubName))
+                        @foreach (var pro in Model.AiPros)
                         {
-                            <p class="mb-0" style="opacity: 0.9;">
-                                <i class="bi bi-building"></i> @Model.ClubName
-                            </p>
+                            <span class="pro-pill"><i class="bi bi-check-circle-fill text-success me-1"></i>@pro</span>
                         }
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Stats Grid -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <h6>Yaş</h6>
-                <div class="value">@Model.Age</div>
-                <small class="text-muted">@Model.DateOfBirth.ToString("d MMMM yyyy")</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <h6>Boy</h6>
-                <div class="value">@Model.Height cm</div>
-                <small class="text-muted">Kilo: @Model.Weight kg</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <h6>Tercih Edilen Ayak</h6>
-                <div class="value">@Model.PreferredFoot</div>
-                <small class="text-muted">Dominant foot</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card market-value-highlight">
-                <h6>Piyasa Değeri</h6>
-                <div class="value">@Model.MarketValue</div>
-                <small class="text-muted">Son güncelleme: @Model.CreatedDate.ToString("d MMMM yyyy")</small>
-            </div>
-        </div>
-    </div>
-
-    @if (Model.JerseyNumber.HasValue)
-    {
-        <div class="alert alert-info mb-4" style="background-color: rgba(0, 102, 255, 0.1); border-left: 4px solid var(--primary-color);">
-            <strong>Forma No:</strong> #@Model.JerseyNumber
-        </div>
-    }
-
-    <!-- Tabs Navigation -->
-    <div style="background-color: var(--card-bg); border-radius: 1rem; padding: 1rem; margin-bottom: 2rem;">
-        <div class="tabs">
-            <button class="tab-button active" onclick="showTab(event, 'market-history')">
-                <i class="bi bi-graph-up"></i> Piyasa Tarihi
-            </button>
-            <button class="tab-button" onclick="showTab(event, 'transfers')">
-                <i class="bi bi-shuffle"></i> Transfer Geçmişi
-            </button>
-            <button class="tab-button" onclick="showTab(event, 'stats')">
-                <i class="bi bi-bar-chart"></i> Statistikler
-            </button>
-        </div>
-    </div>
-
-    <!-- Tab Contents -->
-
-    <div id="market-history" class="tab-content" style="display: block;">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="chart-container">
-                    <h3 class="mb-4">Piyasa Değeri Tarihi (Son 12 Ay)</h3>
-                    <canvas id="marketValueChart" style="max-height: 400px;"></canvas>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="ai-scout-card h-100">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <i class="bi bi-robot text-primary fs-3"></i>
-                        <h4 class="mb-0 fw-bold">Premium AI Raporu</h4>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="stat-label mb-2">Scouting Kategorisi</div>
-                        <div class="h5 fw-bold text-accent">@Model.AiScoutingCategory</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="stat-label mb-2">Öne Çıkan Özellikler</div>
-                        <div class="d-flex flex-wrap">
-                            @foreach (var pro in Model.AiPros)
-                            {
-                                <span class="pro-tag"><i class="bi bi-check2 text-success me-1"></i> @pro</span>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="stat-label mb-2">Benzer Arketip</div>
+                <div class="mb-3">
+                    <small class="text-subtle text-uppercase fw-bold d-block mb-2">Benzer Arketip / Oyuncular</small>
+                    <div class="d-flex flex-wrap gap-2">
                         @foreach (var similar in Model.AiSimilarPlayers)
                         {
-                            <div class="similar-item d-flex align-items-center gap-2">
-                                <i class="bi bi-person-fill text-secondary"></i>
-                                <span>@similar</span>
-                            </div>
+                            <span class="similar-item-badge"><i class="bi bi-person-fill text-primary me-1"></i>@similar</span>
                         }
                     </div>
+                </div>
 
-                    <div class="mt-4 p-3 bg-white rounded-4 border border-secondary border-opacity-25">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <small class="text-secondary">AI Fiyat Tahmini (12 Ay)</small>
-                            <span class="badge @(Model.AiPredictionChange >= 0 ? "bg-success" : "bg-danger")">
-                                @(Model.AiPredictionChange >= 0 ? "+" : "")@Model.AiPredictionChange.ToString("F1")%
-                            </span>
-                        </div>
-                        <div class="h4 fw-bold mb-0">@Model.AiPredictedValue</div>
-                        <small class="text-muted" style="font-size: 0.7rem;">@Model.AiPredictionReasoning</small>
+                <!-- 12 Aylık AI Değer Tahmini Kartı -->
+                <div class="card border rounded-4 p-3 shadow-sm mt-3" style="background: var(--surface-subtle); border-color: var(--border-soft) !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-subtle fw-bold small">12 Aylık Piyasa Değer Tahmini</span>
+                        <span class="badge @(Model.AiPredictionChange >= 0 ? "bg-success" : "bg-danger") px-2 py-1 fw-bold">
+                            @(Model.AiPredictionChange >= 0 ? "+" : "")@Model.AiPredictionChange.ToString("F1")%
+                        </span>
                     </div>
+                    <div class="h3 fw-bold text-heading mb-1">@Model.AiPredictedValue</div>
+                    <small class="text-body fw-medium">@Model.AiPredictionReasoning</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Transfer History -->
-    <div id="transfers" class="tab-content" style="display: none;">
-        <div class="chart-container">
-            <h3 class="mb-4">Transfer Geçmişi</h3>
-            @if (Model.TransferHistory.Count > 0)
-            {
-                <table class="transfer-table">
-                    <thead>
-                        <tr>
-                            <td><strong>Tarih</strong></td>
-                            <td><strong>Kaynak Kulüp</strong></td>
-                            <td><strong>Hedef Kulüp</strong></td>
-                            <td><strong>Bedel</strong></td>
-                            <td><strong>Tür</strong></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var transfer in Model.TransferHistory)
-                        {
-                            <tr>
-                                <td>@transfer.TransferDate.ToString("d MMMM yyyy")</td>
-                                <td>@transfer.FromClub</td>
-                                <td>@transfer.ToClub</td>
-                                <td><strong>@transfer.Fee</strong></td>
-                                <td><span class="badge bg-primary">@transfer.TransferType</span></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <div class="alert alert-info" style="background-color: rgba(0, 102, 255, 0.1); border-left: 4px solid var(--primary-color);">
-                    <i class="bi bi-info-circle"></i> Henüz transfer geçmişi bulunmamaktadır.
+    <!-- Alt Kısım: Piyasa Değeri Tarihi & Transfer Geçmişi -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="panel-layer-box h-100">
+                <h5 class="fw-bold text-heading mb-3">
+                    <i class="bi bi-graph-up-arrow text-success me-2"></i> Piyasa Değeri Eğrisi (Son 12 Ay)
+                </h5>
+                <div style="position: relative; height: 260px;">
+                    <canvas id="marketValueChart"></canvas>
                 </div>
-            }
+            </div>
         </div>
-    </div>
 
-    <!-- Statistics -->
-    <div id="stats" class="tab-content" style="display: none;">
-        <div class="chart-container">
-            <h3 class="mb-4">Detaylı Bilgiler</h3>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <strong>Milliyeti:</strong> @Model.Nationality (@Model.NationalityFlag)
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Mevkii:</strong> @Model.Position
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Boy:</strong> @Model.Height cm
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Kilo:</strong> @Model.Weight kg
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Ayağı:</strong> @Model.PreferredFoot
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Piyasa Değeri:</strong> @Model.MarketValue
-                </div>
+        <div class="col-lg-6">
+            <div class="panel-layer-box h-100">
+                <h5 class="fw-bold text-heading mb-3">
+                    <i class="bi bi-arrow-left-right text-primary me-2"></i> Transfer Geçmişi
+                </h5>
+                @if (Model.TransferHistory.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Kaynak</th>
+                                    <th>Hedef</th>
+                                    <th>Bonservis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var transfer in Model.TransferHistory)
+                                {
+                                    <tr>
+                                        <td><small class="text-subtle fw-semibold">@transfer.TransferDate.ToString("dd.MM.yyyy")</small></td>
+                                        <td class="fw-bold text-heading">@transfer.FromClub</td>
+                                        <td class="fw-bold" style="color: var(--brand-primary);">@transfer.ToClub</td>
+                                        <td><span class="badge border" style="background: var(--surface-subtle); color: var(--text-heading); border-color: var(--border-soft) !important;">@transfer.Fee</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert border text-center py-4 my-2" style="background: var(--surface-subtle); border-color: var(--border-soft) !important;">
+                        <i class="bi bi-clock-history fs-3 text-subtle mb-2 d-block"></i>
+                        <span class="text-subtle small fw-medium">Kayıtlı transfer geçmişi bulunmamaktadır.</span>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -404,89 +381,143 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <script>
-        // Market Value Chart
-        const ctx = document.getElementById('marketValueChart').getContext('2d');
-        const marketHistory = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MarketValueHistory));
-        
-        const labels = marketHistory.map(m => m.month);
-        const data = marketHistory.map(m => m.value / 1_000_000); // Convert to millions
+        function getChartThemeColors() {
+            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            return {
+                labelColor: isDark ? '#f8fafc' : '#0f172a',
+                gridColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(15, 23, 42, 0.1)',
+                lineColor: isDark ? '#38bdf8' : '#0f4c6e',
+                fillColor: isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(15, 76, 110, 0.1)'
+            };
+        }
 
-        new Chart(ctx, {
-            type: 'line',
+        const themeColors = getChartThemeColors();
+
+        // 1. Radar Chart (Yetenek Radarı)
+        const radarCtx = document.getElementById('scoutRadarChart').getContext('2d');
+        const radarChart = new Chart(radarCtx, {
+            type: 'radar',
             data: {
-                labels: labels,
+                labels: ['Hız (PAC)', 'Şut (SHO)', 'Pas (PAS)', 'Dribling (DRI)', 'Defans (DEF)', 'Fizik (PHY)'],
                 datasets: [{
-                    label: 'Piyasa Değeri (â‚¬M)',
-                    data: data,
-                    borderColor: '#0066ff',
-                    backgroundColor: 'rgba(0, 102, 255, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: '#ffd700',
-                    pointBorderColor: '#0066ff',
-                    pointBorderWidth: 2,
+                    label: '@Model.FullName',
+                    data: [@Model.Pace, @Model.Shooting, @Model.Passing, @Model.Dribbling, @Model.Defending, @Model.Physicality],
+                    backgroundColor: themeColors.fillColor,
+                    borderColor: themeColors.lineColor,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#f59e0b',
+                    pointBorderColor: '#ffffff',
+                    pointRadius: 4.5,
                     pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            color: '#e0e0e0',
-                            font: {
-                                size: 14
-                            }
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: themeColors.gridColor },
+                        grid: { color: themeColors.gridColor },
+                        suggestedMin: 30,
+                        suggestedMax: 100,
+                        ticks: { stepSize: 20, font: { size: 10, weight: 'bold' }, backdropColor: 'transparent', color: themeColors.labelColor },
+                        pointLabels: {
+                            font: { size: 12, weight: '700' },
+                            color: themeColors.labelColor
                         }
                     }
                 },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 2. Piyasa Değeri Tarihi
+        const marketCtx = document.getElementById('marketValueChart').getContext('2d');
+        const marketHistory = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MarketValueHistory));
+        const labels = marketHistory.map(m => m.month);
+        const data = marketHistory.map(m => m.value / 1_000_000);
+
+        const marketChart = new Chart(marketCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Piyasa Değeri (€M)',
+                    data: data,
+                    borderColor: themeColors.lineColor,
+                    backgroundColor: themeColors.fillColor,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#f59e0b',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
                 scales: {
                     y: {
                         beginAtZero: false,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#e0e0e0',
-                            callback: function(value) {
-                                return 'â‚¬' + value + 'M';
-                            }
-                        }
+                        grid: { color: themeColors.gridColor },
+                        ticks: { callback: function(val) { return '€' + val + 'M'; }, font: { weight: 'bold' }, color: themeColors.labelColor }
                     },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#e0e0e0'
-                        }
-                    }
+                    x: { grid: { display: false }, ticks: { font: { weight: 'bold' }, color: themeColors.labelColor } }
                 }
             }
         });
 
-        // Tab switching
-        function showTab(event, tabName) {
-            // Hide all tabs
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(t => t.style.display = 'none');
+        // Tema değiştiğinde grafikleri yeniden renklendir
+        window.addEventListener('themeChanged', function() {
+            const c = getChartThemeColors();
+            
+            // Radar güncelleme
+            radarChart.data.datasets[0].backgroundColor = c.fillColor;
+            radarChart.data.datasets[0].borderColor = c.lineColor;
+            radarChart.options.scales.r.angleLines.color = c.gridColor;
+            radarChart.options.scales.r.grid.color = c.gridColor;
+            radarChart.options.scales.r.ticks.color = c.labelColor;
+            radarChart.options.scales.r.pointLabels.color = c.labelColor;
+            radarChart.update();
 
-            // Remove active class from all buttons
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(b => b.classList.remove('active'));
+            // Market Value güncelleme
+            marketChart.data.datasets[0].borderColor = c.lineColor;
+            marketChart.data.datasets[0].backgroundColor = c.fillColor;
+            marketChart.options.scales.y.grid.color = c.gridColor;
+            marketChart.options.scales.y.ticks.color = c.labelColor;
+            marketChart.options.scales.x.ticks.color = c.labelColor;
+            marketChart.update();
+        });
 
-            // Show selected tab
-            document.getElementById(tabName).style.display = 'block';
-
-            // Add active class to clicked button (currentTarget ensures icon clicks do not break behavior)
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
+        // Gözlem Listesi Ekle/Çıkar
+        async function toggleWatchlist(playerId, btn) {
+            try {
+                const formData = new FormData();
+                formData.append('playerId', playerId);
+                const res = await fetch('/Scout/ToggleWatchlist', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.isInWatchlist) {
+                        btn.classList.add('btn-brand-accent');
+                        btn.classList.remove('btn-soft');
+                        btn.innerHTML = '<i class="bi bi-bookmark-check-fill me-1"></i> Listede';
+                    } else {
+                        btn.classList.remove('btn-brand-accent');
+                        btn.classList.add('btn-soft');
+                        btn.innerHTML = '<i class="bi bi-bookmark-star me-1 text-warning"></i> Gözlem Listesi';
+                    }
+                    const badge = document.getElementById('watchlistBadge');
+                    if (badge) {
+                        badge.innerText = data.totalCount;
+                        badge.style.display = data.totalCount > 0 ? 'inline-block' : 'none';
+                    }
+                }
+            } catch (err) {
+                console.error('Watchlist hatası:', err);
             }
         }
     </script>
 }
-

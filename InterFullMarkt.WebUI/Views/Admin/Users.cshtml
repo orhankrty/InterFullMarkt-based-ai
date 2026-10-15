@@ -1,0 +1,143 @@
+@model List<InterFullMarkt.Domain.Entities.User>
+@{
+    ViewData["Title"] = "Kullanıcı & Rol Yönetimi";
+}
+
+<!-- Üst Arama & Bilgi Kartı -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body p-4">
+        <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: var(--surface-subtle); border-color: var(--border-soft); color: var(--text-subtle);">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="userSearchInput" class="form-control border-start-0" placeholder="Kullanıcı adı veya e-posta ara..." style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                </div>
+            </div>
+
+            <div class="col-md-6 text-md-end">
+                <span class="text-subtle small fw-bold">Toplam Kullanıcı:</span>
+                <span class="badge badge-soft-primary rounded-pill px-3 py-2 ms-2 fs-6" id="userCountBadge">@Model.Count</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcılar Tablosu -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h6 class="fw-bold text-heading mb-0">
+            <i class="bi bi-person-gear me-2 text-primary"></i> Kayıtlı Sistem Kullanıcıları
+        </h6>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Avatar</th>
+                    <th>Kullanıcı Adı</th>
+                    <th>E-Posta</th>
+                    <th>Mevcut Rol</th>
+                    <th>Kayıt Tarihi</th>
+                    <th>Sipariş Sayısı</th>
+                    <th class="text-end" style="width: 180px;">Rol Değiştir</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr class="user-row" data-name="@user.Username.ToLower()" data-email="@user.Email.ToLower()">
+                        <td>
+                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; font-size: 0.85rem;">
+                                @(user.Username.Substring(0, 1).ToUpper())
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-heading">@user.Username</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">ID: @user.Id.ToString().Substring(0, 8)</small>
+                        </td>
+                        <td>
+                            <span class="text-subtle">@user.Email</span>
+                        </td>
+                        <td>
+                            @if (user.Role == "Admin")
+                            {
+                                <span class="badge badge-soft-danger rounded-pill px-3 py-1 fw-bold" id="roleBadge-@user.Id">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                                </span>
+                            }
+                            else if (user.Role == "Scout")
+                            {
+                                <span class="badge badge-soft-warning rounded-pill px-3 py-1 fw-bold" id="roleBadge-@user.Id">
+                                    <i class="bi bi-radar me-1"></i> Scout
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft-info rounded-pill px-3 py-1 fw-bold" id="roleBadge-@user.Id">
+                                    <i class="bi bi-person-fill me-1"></i> Üye
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <div class="small text-heading">@user.CreatedDate.ToString("dd.MM.yyyy")</div>
+                            <small class="text-subtle" style="font-size: 0.72rem;">@user.CreatedDate.ToString("HH:mm")</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-soft-primary rounded-pill">@(user.Orders?.Count ?? 0) Sipariş</span>
+                        </td>
+                        <td class="text-end">
+                            <select class="form-select form-select-sm d-inline-block w-auto rounded-pill" onchange="changeRole('@user.Id', this.value)" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                                <option value="User" selected="@(user.Role == "User")">Üye (User)</option>
+                                <option value="Scout" selected="@(user.Role == "Scout")">Scout</option>
+                                <option value="Admin" selected="@(user.Role == "Admin")">Admin</option>
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('userSearchInput');
+        const rows = document.querySelectorAll('.user-row');
+        const countBadge = document.getElementById('userCountBadge');
+
+        searchInput?.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                const email = row.getAttribute('data-email') || '';
+
+                if (query === '' || name.includes(query) || email.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countBadge) countBadge.textContent = visibleCount;
+        });
+
+        function changeRole(userId, newRole) {
+            fetch(`/Admin/Users/ChangeRole/${userId}?role=${newRole}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Rol güncellenemedi.');
+                    }
+                })
+                .catch(e => alert('Hata oluştu: ' + e));
+        }
+    </script>
+}

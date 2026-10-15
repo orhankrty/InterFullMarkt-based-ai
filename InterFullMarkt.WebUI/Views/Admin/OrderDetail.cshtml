@@ -1,0 +1,143 @@
+@model InterFullMarkt.Domain.Entities.Order
+@{
+    ViewData["Title"] = "Sipariş Detayı #" + Model.Id.ToString().Substring(0, 8).ToUpper();
+}
+
+<div class="row g-4">
+    <!-- Sol: Sipariş Kalemleri & Ürünler -->
+    <div class="col-lg-8">
+        <div class="admin-card mb-4">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-box-seam text-primary fs-5"></i>
+                    <h5 class="fw-bold text-heading mb-0">Sipariş Edilen Ürünler</h5>
+                </div>
+                <span class="badge badge-soft-primary rounded-pill">@Model.OrderItems.Count Kalem</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Ürün</th>
+                            <th>Ürün Adı</th>
+                            <th>Kategori</th>
+                            <th>Adet</th>
+                            <th>Birim Fiyat</th>
+                            <th class="text-end">Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="rounded-3 overflow-hidden bg-white p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border: 1px solid var(--border-soft);">
+                                        <img src="@(item.Product?.ImageUrl ?? "/images/default-product.png")" class="img-fluid" alt="@item.Product?.Name" onerror="this.src='/images/default-product.png';">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-heading">@(item.Product?.Name ?? "Ürün Silinmiş")</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-primary rounded-pill">@(item.Product?.Category ?? "Genel")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@item.Quantity Adet</span>
+                                </td>
+                                <td>
+                                    €@((item.UnitPrice?.Amount ?? 0).ToString("N2"))
+                                </td>
+                                <td class="text-end fw-bold text-success">
+                                    €@((item.TotalPrice?.Amount ?? 0).ToString("N2"))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Teslimat & Adres Bilgileri -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-geo-alt-fill me-2 text-danger"></i> Teslimat & Kargo Adresi</h6>
+            </div>
+            <div class="admin-card-body">
+                <div class="p-3 rounded-3" style="background: var(--surface-subtle); border: 1px solid var(--border-subtle);">
+                    <div class="fw-bold text-heading mb-1">Teslimat Adresi:</div>
+                    <div class="text-subtle">@Model.ShippingAddress</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sağ: Sipariş Durumu & Müşteri Özeti -->
+    <div class="col-lg-4">
+        <!-- Durum Güncelleme Kartı -->
+        <div class="admin-card mb-4">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-arrow-repeat me-2 text-primary"></i> Durumu Güncelle</h6>
+            </div>
+            <div class="admin-card-body">
+                <form method="post" action="/Admin/Orders/UpdateStatus/@Model.Id">
+                    <label class="form-label fw-semibold text-heading small">Sipariş Aşaması</label>
+                    <select name="status" class="form-select mb-3" style="background: var(--surface-bg); border-color: var(--border-soft); color: var(--text-heading);">
+                        <option value="Pending" selected="@(Model.Status == "Pending")">Beklemede</option>
+                        <option value="Preparing" selected="@(Model.Status == "Preparing")">Hazırlanıyor</option>
+                        <option value="Shipped" selected="@(Model.Status == "Shipped")">Kargolandı</option>
+                        <option value="Completed" selected="@(Model.Status == "Completed")">Tamamlandı</option>
+                        <option value="Cancelled" selected="@(Model.Status == "Cancelled")">İptal Edildi</option>
+                    </select>
+                    <button type="submit" class="btn btn-brand-primary rounded-pill w-100">
+                        <i class="bi bi-check2-circle me-1"></i> Durumu Kaydet
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Müşteri ve Finansal Özet -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-person-fill me-2 text-info"></i> Müşteri & Tutar Özeti</h6>
+            </div>
+            <div class="admin-card-body">
+                <div class="mb-3">
+                    <div class="text-subtle small">Müşteri Kullanıcı Adı:</div>
+                    <div class="fw-bold text-heading">@(Model.User?.Username ?? "Misafir Müşteri")</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-subtle small">E-Posta:</div>
+                    <div class="fw-semibold text-heading">@(Model.User?.Email ?? "Belirtilmedi")</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-subtle small">Sipariş Tarihi:</div>
+                    <div class="fw-semibold text-heading">@Model.OrderDate.ToString("dd MMMM yyyy HH:mm")</div>
+                </div>
+
+                <hr style="border-color: var(--border-subtle);" />
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-subtle">Ara Toplam:</span>
+                    <span class="fw-semibold text-heading">€@((Model.TotalAmount?.Amount ?? 0).ToString("N2"))</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-subtle">Kargo Ücreti:</span>
+                    <span class="text-success fw-semibold">Ücretsiz</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: var(--surface-subtle); border: 1px solid var(--border-subtle);">
+                    <span class="fw-bold text-heading">Genel Toplam:</span>
+                    <span class="fs-5 fw-bold text-success">€@((Model.TotalAmount?.Amount ?? 0).ToString("N2"))</span>
+                </div>
+
+                <div class="mt-4">
+                    <a href="/Admin/Orders" class="btn btn-soft rounded-pill w-100">
+                        <i class="bi bi-arrow-left me-1"></i> Siparişler Listesine Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,14 +2,14 @@
     ViewData["Title"] = "Giriş Yap";
 }
 
-<div class="container mt-5">
+<div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-lg-5 col-md-7">
-            <div class="card shadow-lg border-0 rounded-4 mt-5 overflow-hidden">
-                <div class="card-header bg-primary text-dark text-center py-4">
-                    <h3 class="font-weight-light mb-0"><i class="bi bi-person-circle me-2"></i> Hesabınıza Giriş Yapın</h3>
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+                <div class="card-header text-center py-4 text-white" style="background: var(--hero-gradient); border-bottom: 1px solid var(--hero-card-border);">
+                    <h3 class="font-weight-light mb-0 text-white"><i class="bi bi-person-circle me-2"></i> Hesabınıza Giriş Yapın</h3>
                 </div>
-                <div class="card-body p-5 bg-light">
+                <div class="card-body p-4 p-md-5">
                     
                     @if (ViewData["Error"] != null)
                     {
@@ -24,43 +24,42 @@
                         
                         <div class="form-floating mb-4">
                             <input type="text" class="form-control rounded-3" id="username" name="username" placeholder="Kullanıcı Adı" required autofocus />
-                            <label for="username" class="text-muted"><i class="bi bi-person me-1"></i> Kullanıcı Adı</label>
+                            <label for="username" class="text-subtle"><i class="bi bi-person me-1"></i> Kullanıcı Adı</label>
                         </div>
                         
                         <div class="form-floating mb-4">
                             <input type="password" class="form-control rounded-3" id="password" name="password" placeholder="Şifre" required />
-                            <label for="password" class="text-muted"><i class="bi bi-key me-1"></i> Şifre</label>
+                            <label for="password" class="text-subtle"><i class="bi bi-key me-1"></i> Şifre</label>
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="rememberMe">
-                                <label class="form-check-label text-muted" for="rememberMe">
+                                <label class="form-check-label text-subtle small fw-medium" for="rememberMe">
                                     Beni Hatırla
                                 </label>
                             </div>
-                            <a href="javascript:void(0)" onclick="alert('Şifre sıfırlama bağlantısı e-posta adresinize gönderilecektir. Bakım çalışması devam ediyor.')" class="text-decoration-none small text-primary">Şifremi Unuttum?</a>
+                            <a href="javascript:void(0)" onclick="alert('Şifre sıfırlama bağlantısı e-posta adresinize gönderilecektir.')" class="text-decoration-none small text-primary fw-semibold">Şifremi Unuttum?</a>
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm fw-bold">
+                            <button type="submit" class="btn btn-brand-primary btn-lg rounded-pill shadow-sm fw-bold">
                                 Giriş Yap <i class="bi bi-box-arrow-in-right ms-1"></i>
                             </button>
                         </div>
                     </form>
                 </div>
-                <div class="card-footer text-center py-4 bg-white border-top-0">
+                <div class="card-footer text-center py-4 border-top" style="background: var(--surface-subtle); border-color: var(--border-subtle) !important;">
                     <div class="small">
-                        <span class="text-muted">Hesabınız yok mu?</span> 
-                        <a asp-controller="Auth" asp-action="Register" class="text-decoration-none fw-bold ms-1">Hemen Kayıt Ol!</a>
+                        <span class="text-subtle">Hesabınız yok mu?</span> 
+                        <a asp-controller="Auth" asp-action="Register" class="text-decoration-none fw-bold ms-1" style="color: var(--brand-primary);">Hemen Kayıt Ol!</a>
                     </div>
                 </div>
             </div>
             
             <div class="text-center mt-4">
-                <p class="text-muted small">Demo Girişi için: <b>admin</b> / <b>123456</b></p>
+                <p class="text-subtle small">Demo Girişi için: <b>admin</b> / <b>123456</b></p>
             </div>
         </div>
     </div>
 </div>
-

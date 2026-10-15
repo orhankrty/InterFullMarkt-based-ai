@@ -58,7 +58,9 @@ public class CreatePlayerCommandHandlerTests
             FullName = "Arda Güler",
             Position = 3,
             NationalityCode = "TR",
-            DateOfBirth = new DateTime(2003, 02, 04)
+            DateOfBirth = new DateTime(2003, 02, 04),
+            Height = 178,
+            Weight = 72
         };
 
         // Act
@@ -66,6 +68,6 @@ public class CreatePlayerCommandHandlerTests
 
         // Assert
         Assert.NotNull(command);
-        Assert.Equal("Arda Güler", command.CreatePlayerDto.FullName);
+        Assert.Equal("Arda Güler", command.PlayerData.FullName);
     }
 }

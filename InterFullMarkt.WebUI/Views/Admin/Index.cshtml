@@ -1,108 +1,232 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
+@{
+    ViewData["Title"] = "Genel Bakış & Dashboard";
+    var recentOrders = ViewBag.RecentOrders as List<InterFullMarkt.Domain.Entities.Order> ?? new();
+    var recentTransfers = ViewBag.RecentTransfers as List<InterFullMarkt.Domain.Entities.Transfer> ?? new();
+    var clubNames = ViewBag.ClubNames as Dictionary<Guid, string> ?? new();
+    var playerNames = ViewBag.PlayerNames as Dictionary<Guid, string> ?? new();
 }
 
-<style>
-    .admin-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        transition: transform 0.3s ease;
-        overflow: hidden;
-    }
-    .admin-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--accent-color);
-    }
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(61, 90, 254, 0.1);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--accent-color);
-        font-size: 1.5rem;
-    }
-</style>
-
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h1 class="display-5 fw-bold text-dark mb-2">Yönetim Paneli</h1>
-            <p class="text-secondary">Sistem genelindeki tüm verileri buradan kontrol edebilirsiniz.</p>
-        </div>
-        <div class="text-end">
-            <span class="badge bg-primary px-3 py-2 rounded-pill">Hoş Geldiniz, Admin</span>
+<!-- Üst KPI İstatistik Kartları -->
+<div class="row g-4 mb-5">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-widget">
+            <div class="stat-widget-icon" style="background: rgba(15, 76, 110, 0.12); color: var(--brand-primary);">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <div class="text-subtle small fw-bold text-uppercase">Toplam Kulüp</div>
+                <h3 class="fw-bold text-heading mb-0">@ViewBag.ClubCount</h3>
+            </div>
         </div>
     </div>
 
-    <!-- Quick Stats -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="admin-card p-4 d-flex align-items-center gap-4">
-                <div class="stat-icon">
-                    <i class="bi bi-shield-check"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0 fw-bold">@ViewBag.ClubCount</h3>
-                    <div class="text-secondary small text-uppercase fw-semibold">Toplam Takım</div>
-                </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-widget">
+            <div class="stat-widget-icon" style="background: rgba(56, 189, 248, 0.15); color: #0284c7;">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <div class="text-subtle small fw-bold text-uppercase">Kayıtlı Oyuncu</div>
+                <h3 class="fw-bold text-heading mb-0">@ViewBag.PlayerCount</h3>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="admin-card p-4 d-flex align-items-center gap-4">
-                <div class="stat-icon">
-                    <i class="bi bi-people"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0 fw-bold">@ViewBag.PlayerCount</h3>
-                    <div class="text-secondary small text-uppercase fw-semibold">Aktif Oyuncu</div>
-                </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-widget">
+            <div class="stat-widget-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                <i class="bi bi-currency-euro"></i>
+            </div>
+            <div>
+                <div class="text-subtle small fw-bold text-uppercase">Toplam Piyasa Değeri</div>
+                <h3 class="fw-bold text-heading mb-0">€@(((decimal)ViewBag.TotalMarketValue).ToString("N0"))</h3>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="admin-card p-4 d-flex align-items-center gap-4">
-                <div class="stat-icon text-success" style="background: rgba(46, 213, 115, 0.1);">
-                    <i class="bi bi-currency-euro"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0 fw-bold">â‚¬1.2B</h3>
-                    <div class="text-secondary small text-uppercase fw-semibold">Piyasa Değeri</div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-widget">
+            <div class="stat-widget-icon" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">
+                <i class="bi bi-bag-check-fill"></i>
+            </div>
+            <div>
+                <div class="text-subtle small fw-bold text-uppercase">Toplam Sipariş / Ciro</div>
+                <h3 class="fw-bold text-heading mb-0">€@(((decimal)ViewBag.TotalRevenue).ToString("N0"))</h3>
+                <small class="text-subtle" style="font-size: 0.75rem;">@ViewBag.OrderCount Sipariş</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hızlı Yönetim Modülleri -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="admin-card h-100">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-people me-2 text-primary"></i> Oyuncu Yönetimi</h6>
+                <span class="badge badge-soft-primary rounded-pill">@ViewBag.PlayerCount Oyuncu</span>
+            </div>
+            <div class="admin-card-body">
+                <p class="text-subtle small mb-4">Veritabanındaki oyuncuları filtreleyin, piyasa değerlerini güncelleyin veya yeni transferler kaydedin.</p>
+                <div class="d-flex gap-2">
+                    <a href="/Admin/Players" class="btn btn-outline-primary rounded-pill btn-sm flex-grow-1">Oyuncuları Gör</a>
+                    <a href="/Admin/Players/Create" class="btn btn-brand-primary rounded-pill btn-sm px-3"><i class="bi bi-plus-lg"></i></a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Management Sections -->
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="admin-card h-100">
-                <div class="p-4 border-bottom border-secondary" style="background: rgba(255,255,255,0.02);">
-                    <h5 class="mb-0"><i class="bi bi-shield-shaded me-2 text-primary"></i> Takım Yönetimi</h5>
-                </div>
-                <div class="p-4">
-                    <p class="text-secondary mb-4">Yeni kulüpler ekleyin, mevcut takımların stadyum, bütçe ve renk bilgilerini güncelleyin.</p>
-                    <a href="/Admin/Teams" class="btn btn-outline-primary w-100 py-2 rounded-pill">
-                        Takımları Yönet <i class="bi bi-chevron-right ms-2"></i>
-                    </a>
+    <div class="col-md-4">
+        <div class="admin-card h-100">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-shield-shaded me-2 text-success"></i> Kulüp Yönetimi</h6>
+                <span class="badge badge-soft-success rounded-pill">@ViewBag.ClubCount Kulüp</span>
+            </div>
+            <div class="admin-card-body">
+                <p class="text-subtle small mb-4">Kulüplerin stadyum, bütçe, lig ve renk bilgilerini kontrol edin ve yeni kulüpler tanımlayın.</p>
+                <div class="d-flex gap-2">
+                    <a href="/Admin/Teams" class="btn btn-outline-primary rounded-pill btn-sm flex-grow-1">Kulüpleri Gör</a>
+                    <a href="/Admin/Teams/Create" class="btn btn-brand-primary rounded-pill btn-sm px-3"><i class="bi bi-plus-lg"></i></a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="admin-card h-100">
-                <div class="p-4 border-bottom border-secondary" style="background: rgba(255,255,255,0.02);">
-                    <h5 class="mb-0"><i class="bi bi-person-badge me-2 text-primary"></i> Oyuncu Yönetimi</h5>
-                </div>
-                <div class="p-4">
-                    <p class="text-secondary mb-4">Veritabanındaki oyuncuları güncelleyin, yeni transferler ekleyin veya oyuncu bilgilerini düzenleyin.</p>
-                    <a href="/Admin/Players" class="btn btn-outline-primary w-100 py-2 rounded-pill">
-                        Oyuncuları Yönet <i class="bi bi-chevron-right ms-2"></i>
-                    </a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="admin-card h-100">
+            <div class="admin-card-header">
+                <h6 class="fw-bold text-heading mb-0"><i class="bi bi-box-seam me-2 text-warning"></i> Mağaza & Ürünler</h6>
+                <span class="badge badge-soft-warning rounded-pill">@ViewBag.ProductCount Ürün</span>
+            </div>
+            <div class="admin-card-body">
+                <p class="text-subtle small mb-4">Resmi lisanslı forma, krampon ve aksesuarların stoklarını, fiyatlarını ve sipariş durumlarını denetleyin.</p>
+                <div class="d-flex gap-2">
+                    <a href="/Admin/Orders" class="btn btn-outline-primary rounded-pill btn-sm flex-grow-1">Siparişleri Gör</a>
+                    <a href="/Admin/Products" class="btn btn-brand-primary rounded-pill btn-sm flex-grow-1">Ürünleri Yönet</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Alt Tablolar: Son Siparişler ve Son Transferler -->
+<div class="row g-4">
+    <!-- Son Siparişler -->
+    <div class="col-lg-7">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt text-primary fs-5"></i>
+                    <h6 class="fw-bold text-heading mb-0">Son Mağaza Siparişleri</h6>
+                </div>
+                <a href="/Admin/Orders" class="btn btn-sm btn-soft-primary rounded-pill px-3">Tümünü Gör</a>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Sipariş No</th>
+                            <th>Müşteri</th>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (recentOrders.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-subtle py-4">Henüz verilmiş bir sipariş bulunmuyor.</td>
+                            </tr>
+                        }
+                        @foreach (var o in recentOrders)
+                        {
+                            <tr>
+                                <td><span class="font-monospace small fw-semibold">#@o.Id.ToString().Substring(0, 8).ToUpper()</span></td>
+                                <td><span class="fw-semibold">@(o.User?.Username ?? "Misafir")</span></td>
+                                <td class="text-subtle small">@o.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="fw-bold text-heading">€@((o.TotalAmount?.Amount ?? 0).ToString("N2"))</td>
+                                <td>
+                                    @if (o.Status == "Completed")
+                                    {
+                                        <span class="badge badge-soft-success rounded-pill px-2 py-1">Tamamlandı</span>
+                                    }
+                                    else if (o.Status == "Shipped")
+                                    {
+                                        <span class="badge badge-soft-info rounded-pill px-2 py-1">Kargolandı</span>
+                                    }
+                                    else if (o.Status == "Cancelled")
+                                    {
+                                        <span class="badge badge-soft-danger rounded-pill px-2 py-1">İptal</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-soft-warning rounded-pill px-2 py-1">@(o.Status ?? "Beklemede")</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a href="/Admin/Orders/Detail/@o.Id" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-1" title="İncele">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Transfer Audit -->
+    <div class="col-lg-5">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left-right text-success fs-5"></i>
+                    <h6 class="fw-bold text-heading mb-0">Son Transfer Hareketleri</h6>
+                </div>
+                <a href="/Admin/Transfers" class="btn btn-sm btn-soft-primary rounded-pill px-3">Tümü</a>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Oyuncu</th>
+                            <th>Geçiş</th>
+                            <th>Bedel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (recentTransfers.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-subtle py-4">Kayıtlı transfer hareketi bulunmuyor.</td>
+                            </tr>
+                        }
+                        @foreach (var t in recentTransfers)
+                        {
+                            var pName = playerNames.ContainsKey(t.PlayerId) ? playerNames[t.PlayerId] : "Oyuncu";
+                            var fromClub = clubNames.ContainsKey(t.FromClubId) ? clubNames[t.FromClubId] : "Kulüp";
+                            var toClub = clubNames.ContainsKey(t.ToClubId) ? clubNames[t.ToClubId] : "Kulüp";
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold text-heading small">@pName</div>
+                                    <small class="text-subtle" style="font-size: 0.72rem;">@t.TransferDate.ToString("dd.MM.yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="small text-truncate" style="max-width: 140px;" title="@fromClub -> @toClub">
+                                        <span class="text-subtle">@fromClub</span> <i class="bi bi-arrow-right text-primary"></i> <span class="fw-semibold">@toClub</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success rounded-pill fw-bold">€@((t.Fee?.Amount ?? 0).ToString("N0"))</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

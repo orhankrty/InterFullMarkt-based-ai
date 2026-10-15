@@ -2,5 +2,6 @@
   <Project Path="InterFullMarkt.Application/InterFullMarkt.Application.csproj" />
   <Project Path="InterFullMarkt.Domain/InterFullMarkt.Domain.csproj" />
   <Project Path="InterFullMarkt.Infrastructure/InterFullMarkt.Infrastructure.csproj" />
+  <Project Path="InterFullMarkt.Tests/InterFullMarkt.Tests.csproj" />
   <Project Path="InterFullMarkt.WebUI/InterFullMarkt.WebUI.csproj" />
 </Solution>

@@ -1,19 +1,33 @@
-﻿@model InterFullMarkt.Domain.Entities.User
+@model InterFullMarkt.Domain.Entities.User
 @{
     ViewData["Title"] = "Hesabım";
 }
 
-<div class="container py-5">
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-size: 0.825rem; font-weight: 700;">
+                <i class="bi bi-person-check-fill"></i> KULLANICI MERKEZİ
+            </div>
+            <h1 class="display-6 fw-bold mb-1 text-heading">Hesap Özeti</h1>
+            <p class="text-body small mb-0 fw-medium">Profil ayarlarınızı, aktif siparişlerinizi ve kayıtlı teslimat adreslerinizi yönetin.</p>
+        </div>
+    </div>
+
     <div class="row g-4">
         <!-- Sidebar -->
         <div class="col-lg-3">
-            <div class="card bg-white border-0 p-3" style="border-radius: 24px;">
+            <div class="card border p-3 shadow-sm mb-4" style="border-color: var(--border-soft) !important; border-radius: 22px;">
                 <div class="text-center py-4">
-                    <div class="rounded-circle bg-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                        <span class="fs-2 fw-bold text-dark">@(User.Identity?.Name?[0].ToString().ToUpper() ?? "U")</span>
+                    <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: var(--brand-primary); color: #ffffff;">
+                        <span class="fs-2 fw-bold">@(User.Identity?.Name?[0].ToString().ToUpper() ?? "U")</span>
                     </div>
-                    <h5 class="text-dark fw-bold mb-0">@User.Identity?.Name</h5>
-                    <p class="text-secondary small">@Model.Email</p>
+                    <h5 class="text-heading fw-bold mb-1">@User.Identity?.Name</h5>
+                    <p class="text-subtle small mb-0">@Model.Email</p>
+                    <span class="badge rounded-pill mt-2 px-3 py-1" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-weight: 700; font-size: 0.75rem;">
+                        @(User.IsInRole("Admin") ? "Yönetici" : "Kayıtlı Üye")
+                    </span>
                 </div>
                 <partial name="_AccountSidebar" />
             </div>
@@ -21,81 +35,113 @@
 
         <!-- Main Content -->
         <div class="col-lg-9">
-            <h2 class="fw-bold mb-4">Hesap Özeti</h2>
-            
-            <div class="row g-4 mb-5">
+            <!-- 3 Stat Cards -->
+            <div class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <div class="card h-100 bg-white border-secondary border-opacity-25 p-4 rounded-4 shadow-sm">
+                    <div class="card h-100 bg-white p-4 shadow-sm" style="border: 1px solid var(--border-soft); border-radius: 20px;">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-primary">
-                                <i class="bi bi-box-seam fs-4"></i>
+                            <div class="p-3 rounded-3" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary);">
+                                <i class="bi bi-box-seam fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-secondary mb-0">Toplam Sipariş</h6>
-                                <h4 class="text-dark fw-bold mb-0">@Model.Orders.Count</h4>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Toplam Sipariş</small>
+                                <h3 class="text-heading fw-bold mb-0">@Model.Orders.Count</h3>
                             </div>
                         </div>
-                        <a href="/Account/Orders" class="text-decoration-none small text-primary">Detaylı Gör <i class="bi bi-arrow-right"></i></a>
+                        <a href="/Account/Orders" class="btn btn-sm btn-soft d-inline-flex align-items-center gap-1 w-100 justify-content-center mt-2">
+                            <span>Siparişleri Gör</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 bg-white border-secondary border-opacity-25 p-4 rounded-4 shadow-sm">
+                    <div class="card h-100 bg-white p-4 shadow-sm" style="border: 1px solid var(--border-soft); border-radius: 20px;">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="p-3 bg-success bg-opacity-10 rounded-3 text-success">
-                                <i class="bi bi-geo-alt fs-4"></i>
+                            <div class="p-3 rounded-3" style="background: rgba(16, 185, 129, 0.1); color: #059669;">
+                                <i class="bi bi-geo-alt fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-secondary mb-0">Kayıtlı Adres</h6>
-                                <h4 class="text-dark fw-bold mb-0">@Model.Addresses.Count</h4>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Kayıtlı Adres</small>
+                                <h3 class="text-heading fw-bold mb-0">@Model.Addresses.Count</h3>
                             </div>
                         </div>
-                        <a href="/Account/Addresses" class="text-decoration-none small text-success">Yönet <i class="bi bi-arrow-right"></i></a>
+                        <a href="/Account/Addresses" class="btn btn-sm btn-soft d-inline-flex align-items-center gap-1 w-100 justify-content-center mt-2">
+                            <span>Adresleri Yönet</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 bg-white border-secondary border-opacity-25 p-4 rounded-4 shadow-sm text-center d-flex align-items-center justify-content-center">
-                        <p class="text-secondary small mb-2">Üyelik Tarihi</p>
-                        <h6 class="text-dark fw-bold">12 Mart 2024</h6>
+                    <div class="card h-100 bg-white p-4 shadow-sm" style="border: 1px solid var(--border-soft); border-radius: 20px;">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="p-3 rounded-3" style="background: rgba(217, 119, 6, 0.1); color: var(--brand-accent);">
+                                <i class="bi bi-calendar-check fs-3"></i>
+                            </div>
+                            <div>
+                                <small class="text-subtle fw-bold text-uppercase d-block" style="font-size: 0.75rem;">Hesap Durumu</small>
+                                <h5 class="text-heading fw-bold mb-0">Doğrulanmış</h5>
+                            </div>
+                        </div>
+                        <a href="/Account/Profile" class="btn btn-sm btn-soft d-inline-flex align-items-center gap-1 w-100 justify-content-center mt-2">
+                            <span>Bilgileri Düzenle</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Orders -->
-            <div class="card bg-white border-secondary border-opacity-25 rounded-4 overflow-hidden">
-                <div class="card-header bg-black bg-opacity-25 py-3 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Son Siparişleriniz</h5>
-                    <a href="/Account/Orders" class="btn btn-sm btn-outline-secondary rounded-pill">Tümünü Gör</a>
+            <div class="card shadow-sm overflow-hidden" style="border: 1px solid var(--border-soft); border-radius: 22px;">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center" style="background-color: var(--surface-subtle); border-color: var(--border-subtle) !important;">
+                    <div>
+                        <h5 class="mb-0 fw-bold text-heading">
+                            <i class="bi bi-bag-check-fill text-primary me-2"></i> Son Siparişleriniz
+                        </h5>
+                        <small class="text-subtle">Son verdiğiniz ürün siparişlerinin teslimat ve fatura durumu</small>
+                    </div>
+                    <a href="/Account/Orders" class="btn btn-sm btn-soft">Tümünü Gör</a>
                 </div>
-                <div class="card-body p-0">
+                <div class="p-0">
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover mb-0 align-middle">
-                            <thead class="bg-black bg-opacity-25">
-                                <tr class="text-secondary small">
-                                    <th class="ps-4">Sipariş No</th>
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead style="background-color: #f8fafc; border-bottom: 1px solid var(--border-subtle);">
+                                <tr class="text-subtle small fw-bold">
+                                    <th class="ps-4 py-3">Sipariş No</th>
                                     <th>Tarih</th>
                                     <th>Tutar</th>
                                     <th>Durum</th>
-                                    <th class="pe-4"></th>
+                                    <th class="pe-4 text-end">Aksiyon</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (!Model.Orders.Any())
                                 {
                                     <tr>
-                                        <td colspan="5" class="py-5 text-center text-secondary opacity-50">
-                                            Henüz bir siparişiniz bulunmuyor.
+                                        <td colspan="5" class="py-5 text-center">
+                                            <div class="text-subtle py-3">
+                                                <i class="bi bi-bag-x display-4 d-block mb-2 opacity-50"></i>
+                                                <h6 class="fw-bold text-heading">Henüz bir siparişiniz bulunmuyor</h6>
+                                                <p class="small mb-3">Resmî lisanslı ürünlerimizi mağazamızdan inceleyebilirsiniz.</p>
+                                                <a href="/Store" class="btn btn-sm btn-brand-primary">Mağazayı Keşfet</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
                                 @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate).Take(3))
                                 {
                                     <tr>
-                                        <td class="ps-4">#@order.Id.ToString().Substring(0, 8)</td>
-                                        <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
-                                        <td class="text-warning fw-bold">@order.TotalAmount</td>
-                                        <td><span class="badge bg-secondary">@order.Status</span></td>
+                                        <td class="ps-4 fw-bold text-heading">#@order.Id.ToString().Substring(0, 8).ToUpper()</td>
+                                        <td class="text-body small">@order.OrderDate.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td class="fw-bold" style="color: var(--brand-primary);">@order.TotalAmount</td>
+                                        <td>
+                                            <span class="badge rounded-pill px-3 py-1" style="background: rgba(15, 76, 110, 0.08); color: var(--brand-primary); font-weight: 600;">
+                                                @order.Status
+                                            </span>
+                                        </td>
                                         <td class="pe-4 text-end">
-                                            <a href="/Account/Orders/@order.Id" class="btn btn-sm btn-link text-primary"><i class="bi bi-eye"></i></a>
+                                            <a href="/Account/Orders/@order.Id" class="btn btn-sm btn-soft" title="Sipariş Detayı">
+                                                <i class="bi bi-eye text-primary"></i> Detay
+                                            </a>
                                         </td>
                                     </tr>
                                 }
@@ -107,4 +153,3 @@
         </div>
     </div>
 </div>
-

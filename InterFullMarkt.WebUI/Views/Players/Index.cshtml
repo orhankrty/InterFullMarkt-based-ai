@@ -1,362 +1,571 @@
-﻿@model InterFullMarkt.Application.Features.Players.Queries.GetAllPlayers.GetAllPlayersResult
+@model InterFullMarkt.Application.Features.Players.Queries.GetAllPlayers.GetAllPlayersResult
 @{
-    ViewData["Title"] = "Oyuncular & Takımlar";
-    var searchTerm = ViewData["SearchTerm"]?.ToString();
-    var hasSearch = !string.IsNullOrWhiteSpace(searchTerm);
+    ViewData["Title"] = "Scout & Oyuncu Keşif Konsolu";
+    var searchTerm = ViewData["SearchTerm"]?.ToString() ?? "";
+    var currentSort = ViewData["SortBy"]?.ToString() ?? "name";
+    var currentPos = ViewData["Positions"]?.ToString() ?? "";
+    var currentFoot = ViewData["Foot"]?.ToString() ?? "";
+    var isWonderkids = (bool?)(ViewData["Wonderkids"]) ?? false;
+    var currentPage = (int)(ViewData["CurrentPage"] ?? 1);
+    var pageSize = Model.PageSize > 0 ? Model.PageSize : 12;
+    var totalPages = (int)Math.Ceiling((double)Model.TotalCount / pageSize);
 }
 
 <style>
-    .search-hero {
+    /* Üst Başlık & Arama Konsolu Alanı (Koyu Stadyum Degradesi) */
+    .scout-header-box {
+        background: var(--hero-gradient);
+        border: 1px solid var(--hero-card-border);
+        border-radius: 28px;
+        padding: 3rem 2.5rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
+        text-align: center;
         position: relative;
-        padding: 5rem 0;
-        background: linear-gradient(135deg, rgba(61, 90, 254, 0.15), rgba(244, 247, 246, 0.9));
-        border-radius: 40px;
-        margin-bottom: 4rem;
-        border: 1px solid var(--border);
-        overflow: hidden;
+        color: #ffffff;
     }
-    .search-hero::before {
-        content: '';
-        position: absolute;
-        top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(circle at center, rgba(61, 90, 254, 0.1) 0%, transparent 70%);
-        animation: pulse 10s infinite alternate;
-    }
-    @@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-    .search-input-wrapper {
+    .scout-console-form {
         position: relative;
-        max-width: 700px;
+        max-width: 680px;
         margin: 0 auto;
     }
 
-    .search-input-wrapper i {
-        position: absolute;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--accent-color);
-        font-size: 1.5rem;
-    }
-
-    .main-search-input {
-        height: 70px;
-        padding-left: 60px !important;
+    /* Filtre Hapları (Yüksek Kontrast & Belirgin Sınırlar) */
+    .filter-pill-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
         border-radius: 50px;
-        background: var(--header-bg) !important;
-        border: 2px solid var(--border) !important;
-        color: var(--text-main) !important;
-        font-size: 1.25rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        background: var(--surface-bg);
+        border: 1px solid var(--border-soft);
+        color: var(--text-body);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        box-shadow: var(--shadow-subtle);
+        transition: all 0.2s ease;
+    }
+    .filter-pill-btn:hover {
+        background: var(--surface-subtle);
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+        transform: translateY(-1px);
+    }
+    .filter-pill-btn.active {
+        background: var(--brand-primary);
+        color: #ffffff !important;
+        border-color: var(--brand-primary);
+        box-shadow: 0 4px 12px rgba(15, 76, 110, 0.35);
+    }
+    .filter-pill-btn.wonderkid.active {
+        background: var(--brand-accent);
+        color: #ffffff !important;
+        border-color: var(--brand-accent);
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     }
 
-    .main-search-input:focus {
-        border-color: var(--accent-color) !important;
-        box-shadow: 0 0 0 0.25rem rgba(61, 90, 254, 0.25);
-    }
-
-    .section-title {
-        border-left: 4px solid var(--accent-color);
-        padding-left: 1rem;
-        margin-bottom: 2rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    /* Club Card Styles */
-    .club-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        border-radius: 28px;
-        overflow: hidden;
-        border: 1px solid var(--border);
+    /* Oyuncu Kartı (Katmanlı Yüzey) */
+    .player-card-layer {
+        background: var(--surface-bg);
+        border-radius: 22px;
+        border: 1px solid var(--border-soft);
+        transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: flex;
+        flex-direction: column;
         height: 100%;
-        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--shadow-subtle);
+    }
+    .player-card-layer:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--brand-primary);
     }
 
-    .club-card:hover {
-        transform: translateY(-10px);
-        border-color: var(--accent-color);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    .scout-rating-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        background: rgba(15, 76, 110, 0.15);
+        color: var(--brand-primary);
+        font-weight: 800;
+        font-size: 0.825rem;
+        padding: 4px 10px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        z-index: 2;
+        border: 1px solid rgba(15, 76, 110, 0.25);
     }
 
-    .club-logo-container {
-        height: 150px;
+    .pos-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-weight: 700;
+        font-size: 0.775rem;
+        padding: 4px 10px;
+        border-radius: 10px;
+        z-index: 2;
+    }
+    .pos-GK { background: rgba(14, 165, 233, 0.15); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.35); }
+    .pos-DF { background: rgba(100, 116, 139, 0.15); color: #475569; border: 1px solid rgba(100, 116, 139, 0.35); }
+    .pos-MF { background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .pos-FW { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.35); }
+
+    [data-bs-theme="dark"] .pos-GK { color: #38bdf8; }
+    [data-bs-theme="dark"] .pos-DF { color: #cbd5e1; }
+    [data-bs-theme="dark"] .pos-MF { color: #fbbf24; }
+    [data-bs-theme="dark"] .pos-FW { color: #f87171; }
+
+    .player-avatar-stage {
+        height: 140px;
+        background: var(--surface-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0,0,0,0.03);
-        padding: 2rem;
+        position: relative;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+    .player-avatar-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--surface-bg);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        background: var(--surface-bg);
     }
 
-    .club-logo-container img {
-        max-height: 100%;
-        object-fit: contain;
-        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-    }
-
-    /* Player Card Styles (Premium) */
-    .player-card {
-        background: var(--card-bg);
-        backdrop-filter: blur(10px);
-        border-radius: 24px;
-        border: 1px solid var(--border);
-        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    .player-card:hover {
-        transform: translateY(-15px) scale(1.02);
-        border-color: var(--accent-color);
-        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .player-position-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--accent-color);
-        padding: 4px 12px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 700;
-    }
-
-    .stat-label { color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-    .stat-value { color: var(--text-main); font-weight: 700; }
-
-    .market-value-tag {
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid rgba(255, 215, 0, 0.3);
-        color: var(--gold);
-        padding: 8px 15px;
-        border-radius: 10px;
+    .wonderkid-strip {
+        background: var(--brand-accent-soft);
+        color: var(--brand-accent-text);
         font-weight: 800;
-    }
-
-    .empty-state {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         text-align: center;
-        padding: 5rem 0;
+        padding: 4px 0;
+        border-bottom: 1px solid rgba(217, 119, 6, 0.2);
     }
 
-    .empty-state i {
-        font-size: 5rem;
-        color: var(--header-bg);
-        margin-bottom: 2rem;
+    .skill-block {
+        background: var(--surface-subtle);
+        border-radius: 10px;
+        padding: 6px 4px;
+        text-align: center;
+        border: 1px solid var(--border-subtle);
+    }
+    .skill-block .label {
+        font-size: 0.675rem;
+        color: var(--text-subtle);
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .skill-block .val {
+        font-size: 0.875rem;
+        font-weight: 800;
+        color: var(--text-heading);
     }
 
-    /* Comparison Bar */
-    .compare-bar {
+    .market-value-figure {
+        font-weight: 800;
+        color: var(--brand-primary);
+        font-size: 1.1rem;
+    }
+
+    .action-circle-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-soft);
+        background: var(--surface-bg);
+        color: var(--text-heading);
+        transition: all 0.2s ease;
+    }
+    .action-circle-btn:hover {
+        background: var(--surface-subtle);
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+    }
+    .action-circle-btn.active {
+        background: var(--brand-accent-soft);
+        color: var(--brand-accent-text);
+        border-color: var(--brand-accent);
+    }
+
+    /* Floating Compare Bar (Glassmorphic) */
+    .compare-omnibar {
         position: fixed;
-        bottom: 30px;
+        bottom: 25px;
         left: 50%;
-        transform: translateX(-50%) translateY(150%);
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        padding: 15px 30px;
+        transform: translateX(-50%) translateY(160%);
+        background: var(--surface-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 12px 28px;
         border-radius: 50px;
-        border: 1px solid var(--accent-color);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        z-index: 1000;
-        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        border: 1px solid var(--border-soft);
+        box-shadow: 0 18px 40px -5px rgba(0, 0, 0, 0.35);
+        z-index: 1050;
+        transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 18px;
     }
-    .compare-bar.active {
+    .compare-omnibar.active {
         transform: translateX(-50%) translateY(0);
     }
 </style>
 
-<div class="container py-4">
-    
-    <!-- Search Section -->
-    <div class="search-hero">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold">Kimi Aramıştınız?</h2>
-            <p class="text-secondary">Oyuncuları ve Kulüpleri Anında Keşfedin.</p>
-        </div>
-        
-        <form method="get" class="search-input-wrapper">
-            <i class="bi bi-search"></i>
-            <input type="text" name="search" class="main-search-input form-control" 
-                   placeholder="Oyuncu adı, kulüp veya milliyet yazın..." 
-                   value="@searchTerm" autocomplete="off">
-            <button type="submit" class="btn btn-primary position-absolute end-0 top-50 translate-middle-y me-2 rounded-pill px-4" style="height: 54px;">
-                Ara
-            </button>
+<div class="container py-3">
+    <!-- Başlık & Arama Konsolu -->
+    <div class="scout-header-box">
+        <span class="badge rounded-pill mb-2 px-3 py-1" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 700; font-size: 0.825rem;">
+            <i class="bi bi-radar me-1"></i> INTERFULLMARKT SCOUT NETWORK
+        </span>
+        <h1 class="display-6 fw-bold text-white mb-2">Futbolcu & Scout Keşif Konsolu</h1>
+        <p class="small mb-4" style="color: #cbd5e1; max-width: 550px; margin: 0 auto;">
+            Yetenek radarı, AI piyasa analizi ve detaylı scouting parametreleriyle aradığınız oyuncuyu anında keşfedin.
+        </p>
+
+        <form method="get" action="/Players" class="scout-console-form" style="max-width: 680px; margin: 0 auto;">
+            <input type="hidden" name="sortBy" value="@currentSort" />
+            <input type="hidden" name="positions" value="@currentPos" />
+            <input type="hidden" name="foot" value="@currentFoot" />
+            @if (isWonderkids)
+            {
+                <input type="hidden" name="wonderkids" value="true" />
+            }
+            
+            <div class="scout-search-wrap">
+                <div class="scout-search-icon-box">
+                    <i class="bi bi-search"></i>
+                </div>
+                <input type="text" name="search" class="scout-search-input" 
+                       placeholder="Oyuncu, kulüp veya mevki arayın" 
+                       value="@searchTerm" autocomplete="off">
+                @if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    <a href="@Url.Action("Index", "Players", new { sortBy = currentSort, positions = currentPos, foot = currentFoot, wonderkids = isWonderkids ? "true" : null })" class="btn btn-link text-muted p-1 me-2 text-decoration-none" title="Aramayı Temizle">
+                        <i class="bi bi-x-circle-fill fs-5"></i>
+                    </a>
+                }
+                <button type="submit" class="scout-search-btn">
+                    <span>Filtrele</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
         </form>
     </div>
 
-    @if (!hasSearch)
-    {
-        <!-- Default Empty State -->
-        <div class="empty-state">
-            <i class="bi bi-rocket-takeoff"></i>
-            <h3>Keşfetmeye Hazır mısınız?</h3>
-            <p class="text-secondary mx-auto" style="max-width: 500px;">
-                Henüz bir arama yapmadınız. Yukarıdaki kutucuğu kullanarak Galatasaray gibi bir kulüp veya Icardi gibi bir oyuncu ismini aratarak başlayabilirsiniz.
-            </p>
-        </div>
-    }
-    else
-    {
-        <!-- Results Section -->
-        <div class="results-container">
-            
-            <!-- Teams Results -->
-            @if (Model.Clubs != null && Model.Clubs.Any())
-            {
-                <div class="mb-5">
-                    <h3 class="section-title"><i class="bi bi-shield-check text-primary me-2"></i> Takımlar</h3>
-                    <div class="row g-4">
-                        @foreach (var club in Model.Clubs)
-                        {
-                            <div class="col-lg-4 col-md-6">
-                                <div class="club-card shadow-lg">
-                                    <div class="club-logo-container">
-                                        @if (!string.IsNullOrEmpty(club.LogoUrl))
-                                        {
-                                            <img src="@club.LogoUrl" alt="@club.Name">
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-shield-shaded display-1 text-muted opacity-25"></i>
-                                        }
-                                    </div>
-                                    <div class="p-4">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h4 class="mb-0">@club.Name</h4>
-                                            <span class="badge bg-white border border-secondary">Krl: @club.FoundingYear</span>
-                                        </div>
-                                        <div class="mb-4 small">
-                                            <p class="text-secondary mb-1"><i class="bi bi-geo-alt me-2"></i> @club.StadiumName</p>
-                                            <div class="d-flex gap-2">
-                                                @foreach (var color in club.Colors.Split('-'))
-                                                {
-                                                    <span class="badge rounded-pill px-3" style="background-color: @color.Trim(); border: 1px solid rgba(255,255,255,0.2);">@color.Trim()</span>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div class="row g-2 border-top border-secondary pt-3">
-                                            <div class="col-6">
-                                                <div class="stat-label">Kadro Sayısı</div>
-                                                <div class="stat-value">@club.SquadCount Oyuncu</div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="stat-label">Kadro Değeri</div>
-                                                <div class="stat-value text-warning">â‚¬@((club.TotalSquadValue ?? 0).ToString("N0"))</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
+    <!-- Hızlı Filtre Barı (Pills) -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="small text-subtle fw-bold text-uppercase me-1"><i class="bi bi-funnel-fill text-primary"></i> Filtrele:</span>
+
+                <!-- Tümü -->
+                <a href="@Url.Action("Index", "Players", new { search = searchTerm, sortBy = currentSort })" 
+                   class="filter-pill-btn @(string.IsNullOrEmpty(currentPos) && !isWonderkids && string.IsNullOrEmpty(currentFoot) ? "active" : "")">
+                    Tüm Oyuncular
+                </a>
+
+                <!-- Wonderkid Butonu -->
+                <a href="@Url.Action("Index", "Players", new { wonderkids = (!isWonderkids).ToString().ToLower(), search = searchTerm, sortBy = currentSort, positions = currentPos })" 
+                   class="filter-pill-btn wonderkid @(isWonderkids ? "active" : "")">
+                    <i class="bi bi-stars text-warning"></i> Wonderkids (&le;21)
+                </a>
+
+                <!-- Pozisyonlar -->
+                <a href="@Url.Action("Index", "Players", new { positions = "Forward", search = searchTerm, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })" 
+                   class="filter-pill-btn @(currentPos.Contains("Forward", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                    Forvet
+                </a>
+                <a href="@Url.Action("Index", "Players", new { positions = "Midfielder", search = searchTerm, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })" 
+                   class="filter-pill-btn @(currentPos.Contains("Midfielder", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                    Orta Saha
+                </a>
+                <a href="@Url.Action("Index", "Players", new { positions = "Defender", search = searchTerm, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })" 
+                   class="filter-pill-btn @(currentPos.Contains("Defender", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                    Defans
+                </a>
+                <a href="@Url.Action("Index", "Players", new { positions = "Goalkeeper", search = searchTerm, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })" 
+                   class="filter-pill-btn @(currentPos.Contains("Goalkeeper", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                    Kaleci
+                </a>
+
+                <!-- Ayak Filtresi -->
+                <div class="dropdown d-inline-block">
+                    <button class="filter-pill-btn dropdown-toggle @(!string.IsNullOrEmpty(currentFoot) ? "active" : "")" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-shoe-prints"></i> @(string.IsNullOrEmpty(currentFoot) ? "Dominant Ayak" : currentFoot)
+                    </button>
+                    <ul class="dropdown-menu border-0 shadow">
+                        <li><a class="dropdown-item" href="@Url.Action("Index", "Players", new { foot = "", search = searchTerm, positions = currentPos, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })">Fark Etmez</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Index", "Players", new { foot = "Right", search = searchTerm, positions = currentPos, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })">Sağ Ayak</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Index", "Players", new { foot = "Left", search = searchTerm, positions = currentPos, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })">Sol Ayak</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Index", "Players", new { foot = "Both", search = searchTerm, positions = currentPos, sortBy = currentSort, wonderkids = isWonderkids ? "true" : null })">Çift Ayak</a></li>
+                    </ul>
                 </div>
-            }
+            </div>
 
-            <!-- Players Results -->
-            <div>
-                <h3 class="section-title"><i class="bi bi-person-bounding-box text-primary me-2"></i> Oyuncular (@Model.TotalCount)</h3>
-                @if (!Model.Players.Any())
+            <!-- Sıralama Dropdown -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="small text-subtle fw-bold">Sırala:</span>
+                <select class="form-select form-select-sm border bg-light rounded-pill px-3 py-2 fw-semibold" style="width: auto; border-color: var(--border-soft) !important;" onchange="location = this.value;">
+                    <option value="@Url.Action("Index", "Players", new { sortBy = "marketvalue_desc", search = searchTerm, positions = currentPos, wonderkids = isWonderkids ? "true" : null, foot = currentFoot })" 
+                            selected="@(currentSort == "marketvalue_desc")">Piyasa Değeri (Azalan)</option>
+                    <option value="@Url.Action("Index", "Players", new { sortBy = "name", search = searchTerm, positions = currentPos, wonderkids = isWonderkids ? "true" : null, foot = currentFoot })" 
+                            selected="@(currentSort == "name")">İsim (A-Z)</option>
+                    <option value="@Url.Action("Index", "Players", new { sortBy = "age", search = searchTerm, positions = currentPos, wonderkids = isWonderkids ? "true" : null, foot = currentFoot })" 
+                            selected="@(currentSort == "age")">En Gençler</option>
+                    <option value="@Url.Action("Index", "Players", new { sortBy = "scout", search = searchTerm, positions = currentPos, wonderkids = isWonderkids ? "true" : null, foot = currentFoot })" 
+                            selected="@(currentSort == "scout")">Scout Puanı</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eğer arama sonucu Kulüpler varsa göster -->
+    @if (Model.Clubs != null && Model.Clubs.Any())
+    {
+        <div class="mb-4">
+            <h5 class="fw-bold mb-3 text-heading d-flex align-items-center">
+                <i class="bi bi-shield-check text-primary me-2"></i> Eşleşen Kulüpler (@Model.Clubs.Count)
+            </h5>
+            <div class="row g-3">
+                @foreach (var club in Model.Clubs)
                 {
-                    <div class="alert alert-info border-secondary py-4 text-center">
-                        <i class="bi bi-search mb-2 d-block fs-2"></i>
-                        Eşleşen oyuncu bulunamadı.
-                    </div>
-                }
-                else
-                {
-                    <div class="row g-4">
-                        @foreach (var player in Model.Players)
-                        {
-                            <div class="col-lg-4 col-md-6">
-                                <div class="player-card position-relative p-4 h-100 shadow-sm">
-                                    <span class="player-position-badge">@player.Position</span>
-                                    
-                                    <div class="d-flex align-items-center gap-3 mb-4">
-                                        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center overflow-hidden" style="width: 70px; height: 70px; border: 2px solid var(--accent-color);">
-                                            @if (!string.IsNullOrEmpty(player.ImageUrl))
-                                            {
-                                                <img src="@player.ImageUrl" alt="@player.FullName" style="width: 100%; height: 100%; object-fit: cover;">
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-person text-secondary fs-2"></i>
-                                            }
-                                        </div>
-                                        <div>
-                                            <h5 class="mb-0 text-dark fw-bold">@player.FullName</h5>
-                                            <small class="text-secondary">@player.Nationality</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="row g-3 mb-4">
-                                        <div class="col-4">
-                                            <div class="stat-label">Yaş</div>
-                                            <div class="stat-value">@player.Age</div>
-                                        </div>
-                                        <div class="col-4 text-center">
-                                            <div class="stat-label">Boy</div>
-                                            <div class="stat-value">@player.Height cm</div>
-                                        </div>
-                                        <div class="col-4 text-end">
-                                            <div class="stat-label">No</div>
-                                            <div class="stat-value text-primary">#@(player.JerseyNumber ?? 0)</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <i class="bi bi-shield-shaded text-accent"></i>
-                                            <span class="text-dark fw-bold">@(player.CurrentClubName ?? "Kulüpsüz")</span>
-                                        </div>
-                                        <div class="progress" style="height: 4px; background: rgba(255,255,255,0.05);">
-                                            <div class="progress-bar bg-primary" style="width: 85%;"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <div class="market-value-tag">
-                                            @player.MarketValue
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <button onclick="toggleCompare('@player.Id', '@player.FullName', this)" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                                <i class="bi bi-plus-circle me-1"></i> Kıyasla
-                                            </button>
-                                            <a href="@Url.Action("Details", "Players", new { id = player.Id })" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                                                Detay <i class="bi bi-arrow-right ms-1"></i>
-                                            </a>
-                                        </div>
-                                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background: var(--surface-subtle); width: 58px; height: 58px; border: 1px solid var(--border-soft);">
+                                    @if (!string.IsNullOrEmpty(club.LogoUrl))
+                                    {
+                                        <img src="@club.LogoUrl" alt="@club.Name" style="max-height: 44px; max-width: 44px; object-fit: contain;">
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-shield text-subtle fs-3"></i>
+                                    }
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-heading">@club.Name</h6>
+                                    <small class="text-subtle"><i class="bi bi-geo-alt"></i> @club.StadiumName</small>
+                                    <div class="small fw-bold mt-1" style="color: var(--brand-primary);">Kadro: @club.SquadCount Oyuncu • €@((club.TotalSquadValue ?? 0).ToString("N0"))</div>
                                 </div>
                             </div>
-                        }
+                        </div>
                     </div>
                 }
             </div>
         </div>
     }
+
+    <!-- Oyuncu Sonuçları Başlığı -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold text-heading mb-0 d-flex align-items-center">
+            <i class="bi bi-person-bounding-box text-primary me-2"></i> 
+            Keşfedilen Oyuncular 
+            <span class="badge border ms-2" style="background: var(--surface-subtle); color: var(--brand-primary); border-color: var(--border-soft) !important;">@Model.TotalCount</span>
+        </h5>
+        <span class="text-subtle small fw-medium">Sayfa @currentPage / @(totalPages == 0 ? 1 : totalPages)</span>
+    </div>
+
+    @if (!Model.Players.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4" style="background: var(--surface-bg); border: 1px solid var(--border-soft) !important;">
+            <div class="py-4">
+                <i class="bi bi-search text-subtle display-2 mb-3 d-block opacity-50"></i>
+                <h5 class="fw-bold text-heading">Kriterlere Uygun Oyuncu Bulunamadı</h5>
+                <p class="text-subtle small mx-auto mb-4" style="max-width: 420px;">
+                    Filtreleri sıfırlayarak veya arama teriminizi değiştirerek daha geniş bir listeye erişebilirsiniz.
+                </p>
+                <a href="/Players" class="btn btn-soft">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Tüm Filtreleri Sıfırla
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Oyuncular Grid -->
+        <div class="row g-4 mb-5">
+            @foreach (var player in Model.Players)
+            {
+                var posClass = player.Position switch
+                {
+                    "Goalkeeper" => "pos-GK",
+                    "Defender" => "pos-DF",
+                    "Midfielder" => "pos-MF",
+                    _ => "pos-FW"
+                };
+
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="player-card-layer">
+                        <!-- Scout Rating -->
+                        <div class="scout-rating-badge" title="Scout Puanı: @player.ScoutRating / 100">
+                            <i class="bi bi-star-fill text-warning"></i> @player.ScoutRating
+                        </div>
+
+                        <!-- Mevki Rozeti -->
+                        <span class="pos-badge @posClass">@player.Position</span>
+
+                        <!-- Fotoğraf & Arkaplan -->
+                        <div class="player-avatar-stage">
+                            @if (!string.IsNullOrEmpty(player.ImageUrl))
+                            {
+                                <img src="@player.ImageUrl" alt="@player.FullName" class="player-avatar-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                            }
+                            else
+                            {
+                                <div class="player-avatar-img d-flex align-items-center justify-content-center text-subtle" style="background: var(--surface-subtle);">
+                                    <i class="bi bi-person fs-2"></i>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Wonderkid Şeridi -->
+                        @if (player.IsWonderkid)
+                        {
+                            <div class="wonderkid-strip">
+                                <i class="bi bi-lightning-charge-fill me-1"></i> Wonderkid (+%@player.PotentialGrowth potansiyel)
+                            </div>
+                        }
+
+                        <!-- İçerik -->
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <div class="mb-2">
+                                <h6 class="fw-bold text-heading mb-0 text-truncate" title="@player.FullName">@player.FullName</h6>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <small class="text-subtle text-truncate fw-medium" style="max-width: 140px;">
+                                        <i class="bi bi-shield me-1"></i>@(player.CurrentClubName ?? "Kulüpsüz")
+                                    </small>
+                                    <small class="badge border" style="background: var(--surface-subtle); color: var(--text-subtle); border-color: var(--border-soft) !important;">@player.Nationality</small>
+                                </div>
+                            </div>
+
+                            <!-- Yetenek Kutucukları (Ayrışan Bloklar) -->
+                            <div class="row g-1 my-2">
+                                <div class="col-4">
+                                    <div class="skill-block">
+                                        <div class="label">Hız</div>
+                                        <div class="val">@player.Pace</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="skill-block">
+                                        <div class="label">Şut</div>
+                                        <div class="val">@player.Shooting</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="skill-block">
+                                        <div class="label">Pas</div>
+                                        <div class="val">@player.Passing</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center small text-subtle mb-3 px-1 fw-medium">
+                                <span><i class="bi bi-calendar3 me-1"></i>@player.Age Yaş</span>
+                                <span><i class="bi bi-arrows-vertical me-1"></i>@player.Height cm</span>
+                                <span><i class="bi bi-shoe-prints me-1"></i>@player.PreferredFoot</span>
+                            </div>
+
+                            <!-- Fiyat ve Aksiyonlar -->
+                            <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="text-subtle text-uppercase fw-bold" style="font-size: 0.675rem;">Piyasa Değeri</div>
+                                    <div class="market-value-figure">@player.MarketValue</div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-1">
+                                    <!-- Takip Listesi Butonu -->
+                                    <button onclick="toggleWatchlist('@player.Id', this)" class="action-circle-btn" title="Gözlem Listesine Ekle">
+                                        <i class="bi bi-bookmark-star"></i>
+                                    </button>
+
+                                    <!-- Kıyaslama Butonu -->
+                                    <button onclick="toggleCompare('@player.Id', '@player.FullName', this)" class="action-circle-btn" title="Kıyaslama Havuzuna Ekle">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </button>
+
+                                    <!-- Detay Linki -->
+                                    <a href="@Url.Action("Details", "Players", new { id = player.Id })" class="btn btn-sm btn-brand-primary px-3 py-1" style="font-size: 0.8rem;">
+                                        Scout <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sayfalama (Pagination) -->
+        @if (totalPages > 1)
+        {
+            <nav class="d-flex justify-content-center my-4">
+                <ul class="pagination pagination-rounded gap-1">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link rounded-pill px-3 border shadow-sm fw-semibold" style="background: var(--surface-bg); color: var(--text-heading); border-color: var(--border-soft) !important;" href="@Url.Action("Index", "Players", new { page = currentPage - 1, search = searchTerm, sortBy = currentSort, positions = currentPos, foot = currentFoot, wonderkids = isWonderkids ? "true" : null })">
+                            <i class="bi bi-chevron-left"></i> Önceki
+                        </a>
+                    </li>
+
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        if (p == 1 || p == totalPages || (p >= currentPage - 2 && p <= currentPage + 2))
+                        {
+                            <li class="page-item @(p == currentPage ? "active" : "")">
+                                <a class="page-link rounded-circle text-center border shadow-sm fw-bold" style="width: 40px; height: 40px; line-height: 24px; border-color: var(--border-soft) !important;" 
+                                   href="@Url.Action("Index", "Players", new { page = p, search = searchTerm, sortBy = currentSort, positions = currentPos, foot = currentFoot, wonderkids = isWonderkids ? "true" : null })">
+                                    @p
+                                </a>
+                            </li>
+                        }
+                        else if (p == currentPage - 3 || p == currentPage + 3)
+                        {
+                            <li class="page-item disabled"><span class="page-link border-0 bg-transparent">...</span></li>
+                        }
+                    }
+
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link rounded-pill px-3 border shadow-sm fw-semibold" style="background: var(--surface-bg); color: var(--text-heading); border-color: var(--border-soft) !important;" href="@Url.Action("Index", "Players", new { page = currentPage + 1, search = searchTerm, sortBy = currentSort, positions = currentPos, foot = currentFoot, wonderkids = isWonderkids ? "true" : null })">
+                            Sonraki <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
 </div>
 
-<!-- Floating Compare Bar -->
-<div id="compareBar" class="compare-bar">
-    <div class="d-flex align-items-center gap-3">
-        <div id="comparePhotos" class="d-flex gap-2">
-            <!-- Selected player indicators go here -->
-        </div>
-        <div class="text-dark border-start border-secondary ps-3">
-            <span id="compareCount" class="fw-bold">0</span> Oyuncu Seçildi
+<!-- Floating Compare Bar (Glassmorphic & Tok) -->
+<div id="compareBar" class="compare-omnibar">
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-pie-chart text-primary fs-5"></i>
+        <div class="border-start ps-3 small text-heading fw-semibold">
+            <span id="compareCount" class="fw-bold fs-6" style="color: var(--brand-primary);">0</span> Oyuncu Seçildi (Max 3)
         </div>
     </div>
-    <button onclick="goToCompare()" class="btn btn-primary rounded-pill px-4 fw-bold">
-        Hemen Kıyasla <i class="bi bi-lightning-fill"></i>
-    </button>
-    <button onclick="clearCompare()" class="btn btn-sm btn-outline-danger border-0 rounded-circle">
-        <i class="bi bi-x-lg"></i>
-    </button>
+    <div class="d-flex align-items-center gap-2">
+        <button onclick="goToCompare()" class="btn btn-brand-primary btn-sm px-3 fw-bold">
+            Kafa Kafaya Kıyasla <i class="bi bi-lightning-fill"></i>
+        </button>
+        <button onclick="clearCompare()" class="btn btn-sm btn-soft rounded-circle" style="width: 32px; height: 32px; padding: 0;" title="Temizle">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
 </div>
 
 <script>
@@ -367,18 +576,16 @@
         
         if (index > -1) {
             compareList.splice(index, 1);
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-outline-primary');
-            btn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Kıyasla';
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
         } else {
             if (compareList.length >= 3) {
-                alert('En fazla 3 oyuncu kıyaslayabilirsiniz.');
+                alert('En fazla 3 oyuncuyu aynı anda radar kıyaslamasına ekleyebilirsiniz.');
                 return;
             }
             compareList.push(id);
-            btn.classList.remove('btn-outline-primary');
-            btn.classList.add('btn-primary');
-            btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Seçildi';
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
         }
 
         updateCompareBar();
@@ -387,7 +594,6 @@
     function updateCompareBar() {
         const bar = document.getElementById('compareBar');
         const countSpan = document.getElementById('compareCount');
-        
         countSpan.innerText = compareList.length;
         
         if (compareList.length >= 2) {
@@ -399,23 +605,51 @@
 
     function goToCompare() {
         if (compareList.length < 2) return;
-        
         let url = '/Players/Compare?';
         compareList.forEach((id, idx) => {
             url += `id${idx+1}=${id}&`;
         });
-        
         window.location.href = url;
     }
 
     function clearCompare() {
         compareList = [];
-        document.querySelectorAll('[onclick^="toggleCompare"]').forEach(btn => {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-outline-primary');
-            btn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Kıyasla';
+        document.querySelectorAll('.action-circle-btn.active').forEach(btn => {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
         });
         updateCompareBar();
     }
-</script>
 
+    // Gözlem Listesi (Watchlist) Toggle
+    async function toggleWatchlist(playerId, btn) {
+        try {
+            const formData = new FormData();
+            formData.append('playerId', playerId);
+            
+            const response = await fetch('/Scout/ToggleWatchlist', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.isInWatchlist) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="bi bi-bookmark-star-fill text-warning"></i>';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="bi bi-bookmark-star"></i>';
+                }
+
+                const badge = document.getElementById('watchlistBadge');
+                if (badge) {
+                    badge.innerText = data.totalCount;
+                    badge.style.display = data.totalCount > 0 ? 'inline-block' : 'none';
+                }
+            }
+        } catch (err) {
+            console.error('Watchlist hatası:', err);
+        }
+    }
+</script>
